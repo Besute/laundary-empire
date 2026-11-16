@@ -1,0 +1,30 @@
+{
+  "name": "laundry-empire",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": {
+        "$ignoreUnknownInstances": true,
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": {
+        "$ignoreUnknownInstances": true,
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Client": {
+          "$ignoreUnknownInstances": true,
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}
