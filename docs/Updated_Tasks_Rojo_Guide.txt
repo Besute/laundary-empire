@@ -1,130 +1,131 @@
-LAUNDRY EMPIRE — ОБНОВЛЁННЫЕ ЗАДАЧИ И ПАМЯТКА ROJO
-Версия: 2.0
-Статус: причина прежнего сбоя найдена — UTF-8 BOM в default.project.json.
-Дата: 14.11.2026
+# Laundry Empire — Updated Tasks and Rojo Guide
 
-============================================================
-1. ТЕКУЩЕЕ СОСТОЯНИЕ
-============================================================
+**Version:** 2.1 | **Date:** 2026-11-16
 
-Подтверждённая причина:
-В начале default.project.json находились байты EF BB BF (UTF-8 BOM),
-после которых шёл символ 7B ({). Rojo 7.7.1 не принял BOM при разборе
-JSONC. Файл был пересохранен в UTF-8 без BOM.
+**Status:** The BOM issue and missing mapped source roots are fixed. Static Rojo checks pass. The local server was confirmed listening on localhost:34872 during the latest check and is stopped after verification. Studio plugin sync and Place1 integrity remain unverified.
 
-Команда исправления:
+## 1. Current status
 
+### Historical cause of the earlier failure (fixed on 2026-11-14)
+
+The beginning of `default.project.json` contained the bytes `EF BB BF` (a UTF-8 BOM), followed by the character `{` (`7B`). Rojo 7.7.1 rejected the BOM while parsing JSONC, so the file was saved as UTF-8 without a BOM.
+
+**Fix command:**
+
+```powershell
 $content = Get-Content .\default.project.json -Raw
 [System.IO.File]::WriteAllText(
     (Resolve-Path .\default.project.json),
     $content,
     [System.Text.UTF8Encoding]::new($false)
 )
+```
 
-Проверка:
+**Check:**
 
+```powershell
 Format-Hex .\default.project.json | Select-Object -First 2
+```
 
-Ожидаемое начало: 7B ... (не EF BB BF).
+Expected first byte: `7B` (not `EF BB BF`).
 
-Сборка для проверки:
+**Build for verification:**
 
+```powershell
 rojo build .\default.project.json --output .\build\LaundryEmpire-test.rbxl
+```
 
-Важно: исправление кодировки ещё не означает, что build, live sync и целостность
-Place1 уже проверены. Отмечать PASS только после фактического выполнения теста.
+The current static checks, rojo sourcemap and rojo build, pass. The shared source contains helpers and configuration modules. The server and client roots contain minimal English entry-point scripts only; gameplay systems have not been implemented. Rojo serve was tested on localhost:34872 and then stopped. Live Studio plugin sync and Place1 integrity have not been tested.
 
-Ранее подготовлены TODO.md, DECISIONS.md, CHANGELOG.md, CHECKPOINT.md,
-GameConfig.lua и EconomyConfig.lua. Конфиги добавлялись в
-ReplicatedStorage.Shared.Config открытого Place1. Проверки JSON/маппинга
-и загрузки модулей через require ранее проходили. Игровые механики пока
-не реализованы. Экономические значения — предварительные гипотезы для
-плейтеста, не финальный баланс. Place1 не публиковать и не перезаписывать
-без резервной копии и отдельной проверки.
+## 2. Immediate Rojo tasks
 
-============================================================
-2. БЛИЖАЙШИЕ ЗАДАЧИ: ROJO
-============================================================
+- [ ] **2.1.** Back up the project and the current Place1.
+- [ ] **2.2.** From the project root, check the tools:
 
-[ ] 2.1. Сделать резервные копии проекта и текущего Place1.
-[ ] 2.2. Из корня проекта проверить инструменты:
+  ```powershell
+  aftman --version
+  rojo --version
+  aftman list
+  ```
 
-    aftman --version
-    rojo --version
-    aftman list
+  If the tools are not installed yet, run:
 
-    Если rojo не находится в PATH:
-    aftman run rojo --version
+  ```powershell
+  aftman install
+  ```
 
-[ ] 2.3. Проверить, что project-файл без BOM:
+  Aftman 0.3.0 does not support a `run` subcommand. After installation, open a new terminal and run `rojo --version` from the project root.
 
-    Format-Hex .\default.project.json | Select-Object -First 2
+- [ ] **2.3.** Check that the project file has no BOM:
 
-    Первые байты должны начинаться с 7B, а не EF BB BF.
+  ```powershell
+  Format-Hex .\default.project.json | Select-Object -First 2
+  ```
 
-[ ] 2.4. Проверить build в отдельный файл:
+  The first bytes must start with `7B`, not `EF BB BF`.
 
-    New-Item -ItemType Directory -Force .\build
-    rojo build .\default.project.json --output .\build\LaundryEmpire-test.rbxl
+- [ ] **2.4.** Build to a separate file:
 
-    BUILD PASS только если команда завершилась без ошибок и файл создан
-    с ненулевым размером. Не использовать основной Place1 как output.
+  ```powershell
+  New-Item -ItemType Directory -Force .\build
+  rojo build .\default.project.json --output .\build\LaundryEmpire-test.rbxl
+  ```
 
-[ ] 2.5. Проверить live server:
+  Mark **BUILD PASS** only if the command finishes without errors and creates a non-empty file. Do not use the main Place1 as the output.
 
-    rojo serve .\default.project.json
+- [ ] **2.5.** Check the live server:
 
-    Оставить PowerShell открытым. Убедиться, что Rojo сообщает об успешном
-    запуске и слушает локальный адрес/порт (часто localhost:34872).
+  ```powershell
+  rojo serve .\default.project.json
+  ```
 
-[ ] 2.6. Подключить Rojo Plugin в Roblox Studio.
-    Сначала использовать тестовую копию Place1 или отдельный тестовый place.
-    Не подключать к основной копии до резервирования и проверки маппинга.
+  Leave PowerShell open. Confirm that Rojo reports a successful start and listens on a local address/port (often `localhost:34872`).
 
-[ ] 2.7. Провести smoke test в папке, которая уже смонтирована
-    в default.project.json. Создать временный файл RojoSmokeTest.lua:
+- [ ] **2.6.** Connect the Rojo plugin in Roblox Studio. Start with a test copy of Place1 or a separate test place. Do not connect to the main copy until a backup exists and the mapping has been checked.
 
-    local SmokeTest = {}
+- [ ] **2.7.** Run a smoke test in a folder already mapped by `default.project.json`. Create a temporary file named `RojoSmokeTest.lua`:
 
-    SmokeTest.Status = "ROJO_SYNC_OK"
-    SmokeTest.Version = 1
+  ```lua
+  local SmokeTest = {}
 
-    return SmokeTest
+  SmokeTest.Status = "ROJO_SYNC_OK"
+  SmokeTest.Version = 1
 
-    Проверить:
-    [ ] ModuleScript появился в ожидаемом месте Explorer.
-    [ ] Изменение Version с 1 на 2 синхронизировалось в Studio.
-    [ ] Удаление файла отразилось в Studio.
-    [ ] После отключения Rojo Studio работает нормально.
+  return SmokeTest
+  ```
 
-    После теста удалить временный файл.
+  Check that:
 
-[ ] 2.8. Проверить целостность Place1:
-    - сравнить Explorer до и после подключения;
-    - проверить важные объекты, созданные вручную или через MCP;
-    - убедиться, что они не исчезли и не были заменены;
-    - проверить Workspace, ReplicatedStorage, ServerScriptService,
-      StarterPlayer и остальные смонтированные узлы;
-    - чётко определить Rojo-owned и Studio-owned области;
-    - проверять $ignoreUnknownInstances только с учётом конкретного маппинга,
-      не добавлять широкие правила игнорирования наугад.
+  - [ ] The ModuleScript appears in the expected place in Explorer.
+  - [ ] Changing `Version` from 1 to 2 syncs to Studio.
+  - [ ] Deleting the file is reflected in Studio.
+  - [ ] Studio works normally after disconnecting Rojo.
 
-============================================================
-3. КАК НЕ СЛОМАТЬ ROJO ПОВТОРНО
-============================================================
+  Delete the temporary file after the test.
 
-ГЛАВНОЕ ПРАВИЛО: default.project.json и другие JSON/JSONC-файлы,
-которые читает Rojo, сохранять в UTF-8 БЕЗ BOM.
+- [ ] **2.8.** Check Place1 integrity:
+  - Compare Explorer before and after connecting.
+  - Check important objects created manually or through MCP.
+  - Confirm they were not removed or replaced.
+  - Check `Workspace`, `ReplicatedStorage`, `ServerScriptService`, `StarterPlayer`, and the other mapped nodes.
+  - Clearly identify Rojo-owned and Studio-owned areas.
+  - Review `$ignoreUnknownInstances` only in the context of the specific mapping. Do not add broad ignore rules without a clear reason.
 
-VS CODE:
-1. Нажать на индикатор кодировки в нижней панели.
-2. Выбрать Save with Encoding.
-3. Выбрать UTF-8.
-4. Не выбирать UTF-8 with BOM.
-5. После правок project-файла проверить первые байты через Format-Hex.
+## 3. How to avoid breaking Rojo again
 
-POWERSHELL — пересохранение одного файла без BOM:
+**Main rule:** Save `default.project.json` and any other JSON/JSONC files read by Rojo as UTF-8 **without a BOM**.
 
+### VS Code
+
+1. Click the encoding indicator in the status bar.
+2. Select **Save with Encoding**.
+3. Select **UTF-8**.
+4. Do not select **UTF-8 with BOM**.
+5. After editing the project file, check its first bytes with `Format-Hex`.
+
+### PowerShell: save one file without a BOM
+
+```powershell
 $path = (Resolve-Path .\default.project.json).Path
 $content = Get-Content .\default.project.json -Raw
 [System.IO.File]::WriteAllText(
@@ -132,167 +133,156 @@ $content = Get-Content .\default.project.json -Raw
     $content,
     [System.Text.UTF8Encoding]::new($false)
 )
+```
 
-Перед преобразованием других файлов сделать копию. Не запускать массовое
-перекодирование папок без необходимости.
+Back up other files before converting them. Do not bulk-re-encode folders unless necessary.
 
-ПЕРЕД КАЖДЫМ BUILD/SYNC:
-[ ] Перейти в корень проекта.
-[ ] Проверить, что используется нужный default.project.json.
-[ ] Убедиться, что первые байты файла — не EF BB BF.
-[ ] Проверить JSON/JSONC и пути маппинга.
-[ ] Убедиться, что Aftman/Rojo запускаются ожидаемыми версиями.
-[ ] Выполнить build в отдельный тестовый файл.
-[ ] Перед live sync убедиться, что резервная копия Place1 существует.
+### Before every build or sync
 
-НЕ ДЕЛАТЬ:
-- Не сохранять project-файлы как UTF-8 with BOM.
-- Не полагаться на то, что PowerShell читает файл: это не гарантирует,
-  что JSONC-парсер Rojo его примет.
-- Не запускать Rojo из случайной папки.
-- Не синхронизировать основной Place1 до проверки резервной копии и маппинга.
-- Не направлять build в файл основного рабочего place.
-- Не менять одновременно кодировку, маппинг и версии инструментов:
-  так труднее локализовать новую ошибку.
+- [ ] Go to the project root.
+- [ ] Confirm that you are using the intended `default.project.json`.
+- [ ] Confirm that the file does not start with `EF BB BF`.
+- [ ] Check JSON/JSONC syntax and mapping paths.
+- [ ] Confirm that Aftman and Rojo run the expected versions.
+- [ ] Build to a separate test file.
+- [ ] Before live sync, confirm that a backup of Place1 exists.
 
-ЕСЛИ ОШИБКА ПОВТОРИЛАСЬ:
-1. Остановить rojo serve сочетанием Ctrl+C.
-2. Не публиковать и не сохранять сомнительную сборку поверх Place1.
-3. Выполнить Format-Hex для default.project.json.
-4. Если начало EF BB BF — пересохранить UTF-8 без BOM.
-5. Повторить build в отдельный файл.
-6. Если BOM отсутствует — проверить JSON/JSONC-синтаксис, пути маппинга,
-   версии инструментов и полный текст ошибки.
-7. Не удалять и не пересоздавать объекты Studio наугад.
+### Do not
 
-============================================================
-4. СЛЕДУЮЩИЙ ЭТАП: АУДИТ PLACE1
-============================================================
+- Save project files as UTF-8 with a BOM.
+- Assume that because PowerShell can read a file, the Rojo JSONC parser will accept it.
+- Run Rojo from an arbitrary folder.
+- Sync to the main Place1 before checking the backup and mapping.
+- Build over the main working place file.
+- Change the encoding, mapping, and tool versions all at once; it makes new errors harder to isolate.
 
-После BUILD PASS, LIVE SYNC PASS и PLACE1 INTEGRITY PASS:
+### If the error happens again
 
-[ ] Составить инвентаризацию сервисов, папок, моделей, скриптов и UI.
-[ ] Отметить объекты, созданные вручную в Studio или через MCP.
-[ ] Найти дубли имён, конфликты и пустые/неиспользуемые узлы.
-[ ] Определить Rojo-owned и Studio-owned области.
-[ ] Сопоставить текущее содержимое с архитектурой GDD:
-    ReplicatedStorage.Shared.Config, общие модули, серверные системы,
-    клиентские контроллеры, RemoteEvents/RemoteFunctions, UI и модели.
-[ ] Составить список: что переиспользовать, что создать, что нельзя менять.
-[ ] Записать результаты в TODO.md, DECISIONS.md, CHANGELOG.md и CHECKPOINT.md.
+1. Stop `rojo serve` with Ctrl+C.
+2. Do not publish or save a questionable build over Place1.
+3. Run `Format-Hex` on `default.project.json`.
+4. If the file starts with `EF BB BF`, save it as UTF-8 without a BOM.
+5. Build again to a separate file.
+6. If there is no BOM, check JSON/JSONC syntax, mapping paths, tool versions, and the full error message.
+7. Do not delete or recreate Studio objects blindly.
 
-============================================================
-5. ОБНОВЛЁННЫЙ ПЛАН MVP LAUNDRY EMPIRE
-============================================================
+## 4. Next stage: Place1 audit
 
-ЗАФИКСИРОВАННЫЕ РЕШЕНИЯ:
-- Загрузка вещей: MENU — выбор типа/количества вещей, анимация загрузки,
-  визуальное перемещение одежды в барабан.
-- Камера: HYBRID — обычная Roblox-камера от третьего лица и отдельный
-  вид сверху/под углом в строительном режиме.
-- Найм: GRADUAL — сначала игрок выполняет работу сам, затем нанимает
-  сотрудников по ролям.
+After **BUILD PASS**, **LIVE SYNC PASS**, and **PLACE1 INTEGRITY PASS**:
 
-[ ] Этап 1. Каркас проекта и стартовый мир
-    Структура модулей, стартовая заброшенная прачечная у торгового центра,
-    участки владения, точка появления, конфиги, запуск сервера и клиента.
+- [ ] Inventory services, folders, models, scripts, and UI.
+- [ ] Mark objects created manually in Studio or through MCP.
+- [ ] Find duplicate names, conflicts, and empty or unused nodes.
+- [ ] Identify Rojo-owned and Studio-owned areas.
+- [ ] Compare the current contents with the GDD architecture: `ReplicatedStorage.Shared.Config`, shared modules, server systems, client controllers, RemoteEvents/RemoteFunctions, UI, and models.
+- [ ] List what to reuse, what to create, and what must not be changed.
+- [ ] Record the results in `docs/legacy/TODO.md`, `docs/legacy/DECISIONS.md`, `docs/legacy/CHANGELOG.md`, and `docs/legacy/CHECKPOINT.md`.
 
-[ ] Этап 2. Основной игровой цикл
-    NPC-клиенты, путь к стойке, заказ, очередь, терпение, выдача заказа,
-    завершение и базовая награда.
+## 5. Updated Laundry Empire MVP plan
 
-[ ] Этап 3. Стирка и сушка
-    Стиральные машины и сушилки, меню загрузки, анимация барабана,
-    циклы стирки/сушки, состояния оборудования и обработка ошибок.
+### Decisions on record
 
-[ ] Этап 4. Экономика и прогресс
-    Деньги, расходы, XP, уровни, разблокировки, сохранение прогресса,
-    серверная проверка денежных операций.
+- **Item loading: MENU** — choose the item type and quantity, play a loading animation, and visually move the clothes into the drum.
+- **Camera: HYBRID** — use the normal Roblox third-person camera during gameplay and a separate angled/top-down view in build mode.
+- **Hiring: GRADUAL** — the player does the work at first, then hires employees for specific roles.
 
-[ ] Этап 5. Чистота, качество и рейтинг
-    Грязь помещения, качество обслуживания, рейтинг и влияние на поток
-    клиентов и доход.
+### Stages
 
-[ ] Этап 6. Магазин и улучшения
-    Покупка оборудования, инвентарь, размещение, улучшения машин,
-    цены и требования разблокировки.
+- [ ] **Stage 1: Project foundation and starting world**
+  Module structure, a run-down starter laundry near a shopping center, player plots, spawn point, configs, and server/client startup.
 
-[ ] Этап 7. Сотрудники
-    Найм по ролям, зарплаты, назначение задач и постепенная автоматизация.
+- [ ] **Stage 2: Core gameplay loop**
+  NPC customers, path to the counter, order, queue, patience, order pickup, completion, and a basic reward.
 
-[ ] Этап 8. Расширение и строительство
-    Расширение помещения, строительная камера, новые зоны/этажи,
-    парковка и дополнительные объекты.
+- [ ] **Stage 3: Washing and drying**
+  Washers and dryers, loading menu, drum animation, wash/dry cycles, equipment states, and error handling.
 
-[ ] Этап 9. Поздние системы после стабильного MVP
-    Реклама, износ и поломки, день/ночь, воры и полиция, транспорт,
-    недвижимость, аукционы, корпоративные заказы, несколько районов,
-    Rebirth и поздняя мета-прогрессия.
+- [ ] **Stage 4: Economy and progression**
+  Money, expenses, XP, levels, unlocks, progress saving, and server-side validation of money transactions.
 
-Не начинать поздние системы, пока цикл
-«клиент → заказ → стирка → сушка → выдача → награда»
-не работает стабильно и не сохраняет данные.
+- [ ] **Stage 5: Cleanliness, quality, and rating**
+  Room dirt, service quality, rating, and effects on customer traffic and income.
 
-============================================================
-6. ТЕХНИЧЕСКИЕ ПРАВИЛА РЕАЛИЗАЦИИ
-============================================================
+- [ ] **Stage 6: Shop and upgrades**
+  Equipment purchases, inventory, placement, machine upgrades, prices, and unlock requirements.
 
-- Сервер — источник истины для денег, заказов, наград, инвентаря и прогресса.
-- Клиент отвечает за UI, ввод, камеру и визуальные эффекты.
-- Проверять все RemoteEvent/RemoteFunction на сервере.
-- Не доверять клиенту цены, суммы наград, владение предметами
-  и подтверждение завершения игровых операций.
-- DataStore реализовывать с обработкой ошибок и защитой от потери данных.
-- Оффлайн-доход не входит в MVP.
-- Rebirth, сложная полиция, аукционы и несколько районов — не первый релиз.
-- Значения EconomyConfig.lua пока являются гипотезами для плейтеста.
-- Проверять производительность NPC, машин и UI при нескольких игроках.
+- [ ] **Stage 7: Employees**
+  Role-based hiring, wages, task assignment, and gradual automation.
 
-============================================================
-7. КРИТЕРИИ БЛИЖАЙШЕГО ЧЕКПОИНТА
-============================================================
+- [ ] **Stage 8: Expansion and building**
+  Room expansion, build camera, new areas/floors, parking, and additional objects.
 
-BUILD PASS:
-[ ] rojo build завершился успешно.
-[ ] Тестовый RBXL создан и имеет ненулевой размер.
+- [ ] **Stage 9: Later systems, after the MVP is stable**
+  Advertising, wear and breakdowns, day/night, thieves and police, transport, property, auctions, corporate orders, multiple districts, Rebirth, and late-game meta progression.
 
-LIVE SYNC PASS:
-[ ] rojo serve запущен.
-[ ] Studio Plugin подключился.
-[ ] Smoke-test ModuleScript появился.
-[ ] Изменение Version синхронизировалось.
-[ ] Удаление файла синхронизировалось.
+Do not start the later systems until the loop “customer → order → wash → dry → pickup → reward” works reliably and saves data.
 
-PLACE1 INTEGRITY PASS:
-[ ] Резервная копия существует.
-[ ] Важные объекты Place1 сохранены.
-[ ] Маппинг Rojo проверен.
-[ ] Нет непреднамеренного удаления/замены Studio-owned объектов.
-[ ] Studio работает после отключения Rojo.
+## 6. Technical implementation rules
 
-PROJECT AUDIT PASS:
-[ ] Инвентаризация Place1 записана.
-[ ] Определены Rojo-owned и Studio-owned области.
-[ ] Конфликты и пробелы внесены в TODO.md.
-[ ] CHECKPOINT.md содержит точную точку продолжения.
+- The server is the source of truth for money, orders, rewards, inventory, and progress.
+- The client handles UI, input, camera, and visual effects.
+- Validate every RemoteEvent and RemoteFunction on the server.
+- Do not trust the client for prices, reward amounts, item ownership, or confirmation that gameplay operations are complete.
+- Implement DataStore with error handling and protection against data loss.
+- Offline income is not part of the MVP.
+- Rebirth, complex policing, auctions, and multiple districts are not part of the first release.
+- Values in `EconomyConfig.lua` are still playtest hypotheses.
+- Check NPC, machine, and UI performance with multiple players.
 
-Только после этих проверок начинать реализацию Этапа 1.
+## 7. Criteria for the next checkpoint
 
-============================================================
-8. ШАБЛОН ОТЧЁТА
-============================================================
+### BUILD PASS
 
+- [ ] `rojo build` completes successfully.
+- [ ] A test RBXL is created and has a non-zero size.
+
+### LIVE SYNC PASS
+
+- [ ] `rojo serve` is running.
+- [ ] The Studio plugin connects.
+- [ ] The smoke-test ModuleScript appears.
+- [ ] The `Version` change syncs.
+- [ ] Deleting the file syncs.
+
+### PLACE1 INTEGRITY PASS
+
+- [ ] A backup exists.
+- [ ] Important Place1 objects are preserved.
+- [ ] The Rojo mapping has been checked.
+- [ ] No Studio-owned objects were unintentionally removed or replaced.
+- [ ] Studio works after disconnecting Rojo.
+
+### PROJECT AUDIT PASS
+
+- [ ] The Place1 inventory is recorded.
+- [ ] Rojo-owned and Studio-owned areas are identified.
+- [ ] Conflicts and gaps are listed in `docs/legacy/TODO.md`.
+- [ ] `docs/legacy/CHECKPOINT.md` records the exact continuation point.
+
+Start Stage 1 only after completing these checks.
+
+## 8. Report template
+
+```text
 Aftman version:
 Rojo version:
 default.project.json BOM check: PASS / FAIL
 Rojo build: PASS / FAIL
 Rojo serve: PASS / FAIL
-Studio Plugin connection: PASS / FAIL
+Studio plugin connection: PASS / FAIL
 Smoke test create/update/delete: PASS / FAIL
 Place1 integrity: PASS / FAIL / NOT TESTED
 Project audit: PASS / FAIL / NOT STARTED
-Ошибки и полный текст логов:
-Следующая задача:
+Errors and full logs:
+Next task:
+```
 
-Не ставить PASS, если проверка не выполнялась. Если подтверждения нет,
-писать NOT TESTED.
+Do not mark a check **PASS** if it was not performed. If there is no confirmation, write **NOT TESTED**.
+
+## 9. Claude Code project MCP
+
+The project-level .mcp.json registers the Roblox_Studio MCP server by launching cmd.exe with /c %LOCALAPPDATA%\Roblox\mcp.bat. The JSON configuration parses and the Roblox launcher exists on this computer.
+
+To connect from Claude Code, open this project folder, approve the project MCP server when prompted, then run /mcp and confirm Roblox_Studio is connected. In Roblox Studio, enable Studio as MCP server in Assistant → Settings → MCP Servers.
+
+The configuration and launcher were checked, but a live Claude Code handshake was NOT VERIFIED because the Claude Code CLI is not available in this shell. This is separate from the Rojo Studio Plugin connection.

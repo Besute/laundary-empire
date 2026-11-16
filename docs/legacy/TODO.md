@@ -1,51 +1,54 @@
-# TODO вЂ” staged against Laundry_Empire_GDD_RU.txt
+# TODO — staged against docs/GDD_RU.txt
 
-Statuses: `[ ]` not started В· `[~]` in progress В· `[x]` verified in Studio В· `[!]` blocked.
+Statuses: `[ ]` not started · `[~]` in progress · `[x]` verified in Studio · `[!]` blocked.
 
-## Stage 0 вЂ” Audit / scaffold
+## Stage 0 — Audit / scaffold
 - [x] Read GDD and record approved decisions, MVP scope, and safety rules.
-- [x] Set up Rojo mapping and initial server/client/shared source layout.\n- [x] Scope sync to intended roots and preserve unknown children within the mapped roots.\n- [x] Add bounded Rojo sync scopes and preserve unmapped Studio/MCP children.
+- [x] Set up Rojo mapping and initial server/client/shared source layout.
+- [x] Scope sync to intended roots and preserve unknown children within the mapped roots.
+- [x] Add bounded Rojo sync scopes and preserve unmapped Studio/MCP children.
 - [~] Inventory built-in place content and root children; full script/UI/asset audit awaits a verified Rojo sync session.
-- [x] Remove UTF-8 BOM risk from `default.project.json`; direct Rojo 7.7.1 build succeeds.\n- [ ] Verify live Rojo plugin sync and preservation behavior against the intended Studio place.
+- [x] Remove UTF-8 BOM risk from `default.project.json`; direct Rojo 7.7.1 build succeeds.
+- [ ] Verify live Rojo plugin sync and preservation behavior against the intended Studio place.
 
-## Stage 1 вЂ” Starter world and player data
+## Stage 1 — Starter world and player data
 - [ ] Create the Downtown starting block and abandoned starter laundry.
 - [ ] Assign each player an isolated plot; prevent cross-player ownership edits.
 - [ ] Persist business name and one of three cosmetic facades.
 - [ ] Implement versioned profile load/save and safe session locking.
 
-## Stage 2 вЂ” Build and business setup
+## Stage 2 — Build and business setup
 - [ ] Add build UI, grid preview, rotate/cancel/confirm, and hybrid camera.
 - [ ] Place washer, dryer, and intake counter with server-side plot/bounds/overlap validation.
 - [ ] Add business name, hours, and open/closed controls.
 - [ ] Restore placement layout after rejoin.
 
-## Stage 3 вЂ” One complete order (MVP core)
+## Stage 3 — One complete order (MVP core)
 - [ ] Implement one customer/order offer with accept and polite decline.
 - [ ] Enforce server-side order states and washer capacity across all unfinished orders.
 - [ ] Add menu-driven item loading, detergent and wash mode selection.
-- [ ] Implement wash в†’ transfer в†’ dry в†’ pack в†’ pickup workflow.
+- [ ] Implement wash → transfer → dry → pack → pickup workflow.
 - [ ] Pay Cash and XP exactly once; preserve orders if customer/player leaves.
 
-## Stage 4 вЂ” Queue and customers
+## Stage 4 — Queue and customers
 - [ ] Queue limit, patience, departure, return-for-pickup, and feedback.
 - [ ] Bounded NPC population, route timeout, and path retry.
 
-## Stage 5 вЂ” Rating and cleanliness
+## Stage 5 — Rating and cleanliness
 - [ ] Service/cleanliness/interior/speed/review rating components.
 - [ ] Event-driven dirt and manual cleaning; no per-frame dirt simulation.
 
-## Stage 6 вЂ” Shop and inventory
+## Stage 6 — Shop and inventory
 - [ ] Server-validated consumable purchase, persistence, and one-time consumption.
 
-## Stage 7 вЂ” Economy and progression
+## Stage 7 — Economy and progression
 - [ ] Cash, XP, levels, unlocks, costs, wages, utilities, taxes, transaction ledger.
 - [ ] Keep balance hypotheses in shared config; no offline production/income in MVP.
 
-## Stage 8 вЂ” Equipment wear and repair
+## Stage 8 — Equipment wear and repair
 - [ ] Wear warnings, breakdown, repair, and preservation of in-flight orders/items.
 
-## Stage 9 вЂ” Employees
+## Stage 9 — Employees
 - [ ] Hiring/firing, roles, zones, task queue, wage schedule, no duplicate task execution.
 
 ## Later stages (after MVP)

@@ -1,740 +1,692 @@
-LAUNDRY EMPIRE — GAME DESIGN DOCUMENT (GDD) Единое руководство для
-ИИ-агента разработки в Roblox Studio Версия 1.0 | 12 ноября 2026 | Luau
-
-1.  ВИДЕНИЕ ПРОЕКТА Laundry Empire — многопользовательский Roblox
-    Simulator + Tycoon + Management. Игрок начинает с маленького
-    заброшенного помещения возле торгового центра, сам принимает одежду
-    от NPC, стирает, сушит и выдаёт заказы. Затем он улучшает
-    оборудование и интерьер, нанимает сотрудников, покупает соседние
-    здания, строит парковки и этажи, запускает рекламу, защищает бизнес
-    ночью и превращает одну прачечную в империю.
-
-Главная фантазия: «Я начинал с грязного пустого помещения и сам стирал
-первые вещи. Теперь у меня красивая сеть прачечных, сотрудники
-обслуживают клиентов, автомобили паркуются у филиалов, а район
-развивается благодаря моему бизнесу».
-
-Дизайн-столпы: - Понятный интерактивный цикл обслуживания. - Видимый
-рост бизнеса и кастомизация здания. - Живой город с NPC, машинами,
-магазинами и сменой времени. - Управление деньгами, рейтингом,
-персоналом и расходами. - Управляемые риски: очереди, грязь, поломки и
-воры. - Долгосрочный прогресс: недвижимость, этажи, филиалы и Rebirth.
-
-Визуальный стиль: полноценный 3D-мир Roblox, не изометрическая игра;
-блочные Roblox-аватары; low-poly окружение; пастельные цвета и бирюзовые
-акценты; свободное исследование интерьеров; читаемый адаптивный UI.
-
-2.  УТВЕРЖДЁННЫЕ РЕШЕНИЯ Загрузка вещей — MENU: игрок взаимодействует с
-    корзиной/машиной, выбирает тип и количество вещей в интерфейсе;
-    персонаж автоматически проигрывает анимацию загрузки, а модели
-    одежды визуально перемещаются в барабан. Не нужно вручную
-    перетаскивать каждую модель.
-
-Камера — HYBRID: обычная Roblox-камера от третьего лица в игре;
-отдельный обзор сверху/под углом в режиме строительства; после выхода
-камера возвращается к обычному виду.
-
-Сотрудники — GRADUAL: сначала игрок работает сам; профессии открываются
-постепенно; каждая роль автоматизирует отдельную операцию; у сотрудников
-есть зарплата, скорость, уровень, рабочая зона и назначенная задача.
-
-Также утверждено: - Игрок выбирает название и один из трёх косметических
-фасадов: Modern, Classic, Colorful. - Начальное помещение грязное,
-пустое, с обветшалыми стенами и слабым освещением. - Для открытия нужны
-стиральная машина, сушилка и стойка приёма заказов. - Меню «Прачечная»
-управляет названием, открытием/закрытием и расписанием. - NPC образуют
-очередь, теряют терпение и могут уйти. - Игрок может принять или вежливо
-отклонить заказ. - Общая вместимость незавершённых заказов ограничена
-мощностью стиральных машин. - Заказ проходит стирку, сушку, упаковку и
-выдачу. - Есть магазин, сотрудники, рейтинг, грязь, поломки, налоги,
-реклама, парковки, воры и полиция. - Можно покупать соседние здания и
-расширяться вширь и вверх. - Rebirth и новые районы — поздняя игра.
-
-3.  ОСНОВНОЙ ИГРОВОЙ ЦИКЛ Улучшить здание/оборудование/рекламу ->
-    открыть прачечную -> привлечь прохожих и автомобилистов -> принять
-    заказы -> загрузить вещи через меню -> выбрать средство и режим ->
-    постирать -> высушить -> упаковать -> выдать -> получить деньги, XP
-    и отзыв -> поддерживать чистоту и оборудование -> реинвестировать
-    прибыль.
-
-Короткая сессия: несколько заказов, проверка очереди и машин, уборка,
-закупка расходников. Средняя сессия: нанять работника, улучшить
-интерьер, купить оборудование, запустить рекламу. Длинная сессия:
-расширить помещение, купить соседний участок, участвовать в аукционе,
-пережить ночное событие.
-
-В MVP нет оффлайн-производства и оффлайн-дохода. Заказы и циклы
-обрабатываются только во время активной серверной сессии.
-
-4.  СТАРТ И ОБУЧЕНИЕ Игрок появляется возле торгового центра и видит
-    заброшенное помещение. Он вводит название, выбирает фасад и входит
-    внутрь. Внутри старые обои, грязный пол, слабое освещение, пустое
-    пространство и старые окна.
-
-Шаги обучения: T1 — открыть меню строительства. T2 — купить и поставить
-стиральную машину. T3 — купить и поставить сушилку. T4 — купить и
-поставить стойку. T5 — открыть меню «Прачечная». T6 — проверить название
-и расписание. T7 — открыть бизнес. T8 — принять первый заказ. T9 —
-провести его через стирку и сушку. T10 — выдать заказ и получить
-награду.
-
-Обучение контекстное, подсвечивает нужный объект и не блокирует
-управление надолго. Завершение: игрок самостоятельно выдал первый заказ.
-
-5.  ГОРОД DOWNTOWN Стартовый район: торговый центр, главная улица,
-    двухполосная дорога, тротуары, переходы, перекрёсток, фонари,
-    деревья, скамейки, магазин расходников, рекламное агентство,
-    рекламные места, стартовая прачечная и заброшенные здания
-    слева/справа.
-
-Заброшенные здания имеют разбитые окна, трещины, облупившуюся краску,
-мусор, старые вывески и заросшие территории. Игрок покупает их,
-восстанавливает и назначает назначение: прачечная, склад, парковка, офис
-или дополнительная зона.
-
-Для MVP достаточно индивидуального развития недвижимости. Общий рейтинг
-района — позднее.
-
-Типы NPC: фоновые пешеходы, потенциальные клиенты, клиенты с заказом,
-автомобилисты, позднее VIP-клиенты и корпоративные представители.
-Автомобили ездят по заранее заданным Waypoints; не использовать тяжёлую
-физику для большого числа машин.
-
-6.  НЕДВИЖИМОСТЬ И СТРОИТЕЛЬСТВО Недвижимость:
-
--   Маленькие помещения: магазины, кафе, небольшие коммерческие блоки.
--   Средние здания: двухэтажные помещения, склады, офисы.
--   Большие участки: промышленные здания, парковки, логистические
-    центры.
-
-Состояния объекта: Available -> ReservedForPurchase -> Owned ->
-UnderRenovation -> Operational. Дополнительно Locked и Disabled.
-
-Покупка сервером проверяет деньги, доступность и владение. Нельзя купить
-чужой объект, купить объект дважды или списать деньги при неуспешной
-покупке.
-
-Режим строительства: - сетка размещения; - прозрачный предпросмотр; -
-зелёный цвет — допустимо, красный — нельзя; - поворот, подтверждение,
-отмена; - проверка границ участка и пересечений; - серверная проверка
-координат и цены; - сохранение позиции, поворота и этажа.
-
-Категории: оборудование; приём; хранение; интерьер; освещение;
-санитария; безопасность; стены/окна/двери/лестницы/перекрытия/крыши;
-парковочная разметка и шлагбаумы.
-
-Расширение вверх требует перекрытий, лестниц, стен и окон. Лифты и
-объединение зданий — после MVP. Дорогой декор не должен быть
-обязательным для хорошего рейтинга.
-
-7.  NPC-КЛИЕНТЫ И СОСТОЯНИЯ Данные клиента: CustomerId, CustomerType,
-    AppearanceId, PreferredService, Patience, Mood, ChosenBusinessId,
-    CurrentState, OrderId, ArrivalTime, ReturnTime, TargetPosition.
-
-Состояния: Spawned — создан. Walking — идёт по маршруту. Browsing —
-осматривает улицу. Interested — заинтересовался вывеской.
-ApproachingBusiness — идёт к прачечной. Entering — заходит. JoiningQueue
-— занимает очередь. Waiting — ждёт. Impatient — раздражается. Leaving —
-уходит. OrderAccepted — заказ принят, клиент покидает помещение.
-AwayWithOrder — ожидает готовности. Returning — возвращается.
-WaitingForPickup — ждёт выдачи. Satisfied — получил вещи и доволен.
-Dissatisfied — оставил негативный отзыв. Completed — взаимодействие
-завершено. Despawned — модель удалена.
-
-Выбор прачечной зависит от привлекательности, репутации, рекламы,
-расстояния, чистоты, открытости, очереди и парковки.
-
-Пример формулы: ChoiceScore = 0.25Attractiveness + 0.25Reputation +
-0.15Advertising + 0.15Accessibility + 0.10Cleanliness +
-0.10ParkingBonus - DistancePenalty. Веса конфигурируются; вероятности
-нормализуются между доступными прачечными.
-
-Ограничивать число активных NPC. Фоновые NPC могут быть упрощёнными. Для
-застрявших NPC нужен таймаут и перепоиск пути.
-
-8.  ЗАКАЗЫ, ОЧЕРЕДЬ И ТЕРПЕНИЕ Карточка заказа: клиент, список вещей,
-    количество, услуга, оплата, ориентировочное время, требования,
-    кнопки «Принять» и «Отказать».
-
-Состояния заказа: Offered, Accepted, WaitingForWash, Washing,
-WaitingForDryer, Drying, Finishing, ReadyForPickup, Completed, Failed,
-Cancelled. Переходы контролирует OrderService. Нельзя перескочить из
-Offered в Completed.
-
-Очередь: - NPC становятся по порядку прибытия. - У каждого есть Patience
-и WaitTime. - Терпение постепенно снижается. - Состояния: спокоен,
-беспокоится, раздражён, уходит. - Индикатор терпения виден над NPC или в
-UI. - При нуле NPC уходит и создаёт событие негативного отзыва. -
-Очередь имеет лимит; при заполнении новые посетители могут пройти мимо.
-
-Вежливый отказ до принятия заказа не равен провалу заказа. Он не должен
-иметь такой же штраф, как игнорирование клиента. Игрок видит причину
-отказа.
-
-После принятия заказа клиент может уйти и вернуться позже. Заказ —
-отдельная сущность и не исчезает вместе с NPC.
-
-У заказа есть EstimatedReadyAt и CustomerReturnAt. Если клиент вернулся,
-а заказ не готов, он ждёт дополнительное время. После истечения терпения
-выдачи возможен штраф к оплате и отзыв. Игрок видит ориентир времени.
-
-Вместимость: - каждая вещь имеет CapacityUnits; - каждая стиральная
-машина имеет CapacityUnits; - UnfinishedUnits = сумма единиц всех
-принятых, но ещё не выданных заказов; - AvailableUnits = суммарная
-доступная вместимость исправных машин - UnfinishedUnits; - заказ
-принимается, только если UnfinishedUnits + NewOrderUnits <=
-TotalAvailableUnits. Проверка выполняется сервером. Для MVP учитываются
-все незавершённые заказы, в том числе вещи в корзине, стирке и сушке.
-Поломка не удаляет уже принятые заказы.
-
-9.  СТИРКА, СУШКА И ВЫДАЧА Загрузка через меню — утверждённый способ.
-    Игрок взаимодействует с корзиной или машиной, выбирает тип и
-    количество вещей и нажимает «Загрузить». Сервер проверяет
-    принадлежность машины, состояние, наличие вещей, вместимость,
-    совместимость и отсутствие повторной загрузки. Персонаж проигрывает
-    анимацию, модели одежды визуально перемещаются в барабан.
-
-Типы вещей: футболки, джинсы, полотенца, рубашки, постельное бельё,
-деликатные вещи.
-
-Средства: обычный порошок, профессиональный порошок, средство для
-деликатных тканей, кондиционер, отбеливатель, пятновыводитель,
-ароматизатор. У товара есть ItemId, цена, остаток, бонус качества,
-совместимые ткани и уровень разблокировки. Расходники тратятся; нельзя
-запустить обязательный цикл без средства.
-
-Режимы: - Быстрый — меньше времени. - Обычный — баланс времени и
-качества. - Деликатный — для чувствительных тканей. - Интенсивный — для
-сильных загрязнений.
-
-Состояния машины: Idle, Loading, ReadyToStart, Washing, CycleComplete,
-Unloading, NeedsMaintenance, Broken, Repairing, Disabled.
-
-После стирки игрок выбирает вещи в меню сушилки. Персонаж переносит их
-анимацией. Сушилка имеет вместимость и таймер. Сушильная стойка дешевле,
-но медленнее и занимает место.
-
-После сушки игрок собирает/упаковывает заказ через меню или
-интерактивный стол. Статус становится ReadyForPickup. При возвращении
-клиента игрок нажимает «Выдать». Сервер проверяет готовность и начисляет
-оплату/XP ровно один раз.
-
-Качество зависит от правильного режима, средства, исправности
-оборудования, своевременности и дополнительных услуг. Небольшая ошибка
-не должна полностью уничтожать заказ.
-
-10. ОБОРУДОВАНИЕ И ПОЛОМКИ Параметры машины: MachineId, MachineType,
-    Capacity, CycleDurationMultiplier, QualityMultiplier, Wear,
-    Condition, Durability, CurrentOrderIds, CurrentCycleEndTime,
-    OwnerId, PropertyId.
-
-Износ растёт после циклов и может зависеть от режима. При пороге машина
-предупреждает об обслуживании. Игнорирование предупреждения повышает
-шанс поломки.
-
-Состояния: Working -> NeedsMaintenance -> Broken -> Repairing ->
-Working.
-
-При поломке цикл останавливается/переходит в аварийное состояние, вещи и
-заказ сохраняются, игрок видит затронутые заказы. Можно вызвать механика
-или перераспределить вещи на свободную совместимую машину. Ремонт имеет
-цену и время. Профилактика дешевле аварийного ремонта.
-
-11. РЕЙТИНГ, ОТЗЫВЫ И ЧИСТОТА Рейтинг 0–100:
-
--   ServiceRating — обслуживание;
--   CleanlinessRating — чистота;
--   InteriorRating — интерьер;
--   SpeedRating — скорость;
--   ReviewRating — отзывы.
-
-Стартовые веса: обслуживание 30%, чистота 20%, интерьер 15%, скорость
-20%, отзывы 15%. Все веса конфигурируются.
-
-Позитивный отзыв: заказ вовремя и хорошее качество. Нейтральный: обычный
-опыт. Негативный: ожидание, просрочка, плохое качество, грязь.
-
-NPC могут оставлять бумажки, стаканчики, упаковки, следы обуви и пятна.
-Игрок убирает метлой, шваброй или пылесосом. Мусорки помогают NPC
-выбрасывать мусор правильно, но могут требовать опустошения.
-
-Загрязнение создаётся и удаляется событийно, а не пересчитывается каждый
-кадр. Длительная грязь снижает рейтинг. Декор: растения, диваны,
-телевизоры, картины, часы, неон, светильники, покрытия, обои, окна.
-Бонус одинаковых предметов ограничен.
-
-12. ЭКОНОМИКА, XP И ПРОГРЕССИЯ Валюты: Cash — основная игровая; Gems —
-    премиальная для косметики и необязательных удобств.
-
-Источники Cash: завершённые заказы, чаевые, парковка (если платная),
-дополнительные услуги, позднее корпоративные заказы и события. Расходы:
-оборудование, расходники, недвижимость, ремонт, зарплаты, налоги,
-реклама, строительство, декор, парковка.
-
-XP начисляется преимущественно за завершённые заказы. Дополнительный XP
-возможен за уборку, ремонт и события, но повторные клики не должны
-давать бесконечный опыт.
-
-Уровни открывают машины, средства, декор, сотрудников, рекламу,
-расширение и типы недвижимости. Некоторые разблокировки требуют также
-денег, рейтинга или достижений.
-
-Налоги списываются по понятному периоду, например в конце игрового дня.
-Игрок заранее видит оценку. Новичок не должен неожиданно потерять
-стартовый капитал. При нехватке денег использовать предупреждение или
-ограниченную задолженность, а не удаление бизнеса.
-
-Финансовая панель: баланс, доход за день, расходы, чистая прибыль,
-зарплаты, закупки, ремонт, налоги, реклама и парковка.
-
-Стартовые гипотезы для плейтеста: - стартовый Cash: 2 500–4 000; -
-базовая стиралка: 700–1 000; - сушилка: 500–800; - стойка: 200–350; -
-обычный порошок: 20–40; - уборочный инструмент: 100–250; - декорация:
-50–150; - средний заказ: 80–150; - очередь на старте: 2–3 NPC; - полный
-игровой день: 30–40 реальных минут; - вместимость базовой машины: пример
-8 CapacityUnits. Все цифры — гипотезы и хранятся в конфиге.
-
-Целевые ощущения: первый заказ выполняется быстро; первые деньги видны в
-первые минуты; первое улучшение достижимо без гринда; автоматизация
-открывается после знакомства с ручным циклом; расходы создают выбор, но
-не постоянную финансовую тревогу; причины штрафов понятны.
-
-13. СОТРУДНИКИ И АВТОМАТИЗАЦИЯ Роли:
-
--   Cashier — очередь, приём и выдача.
--   Washer — загрузка и запуск стирки.
--   Dryer — перенос вещей в сушилки.
--   Packer — упаковка.
--   Cleaner — уборка.
--   Mechanic — обслуживание и ремонт.
--   SecurityGuard — реакция на угрозы.
--   Manager — позднее управление зонами/филиалами.
-
-Параметры: EmployeeId, Role, Level, WorkSpeed, Salary, Efficiency,
-AssignedTask, WorkZone, ShiftStart, ShiftEnd, Status, Experience.
-
-Состояния: Available, Working, MovingToTask, PerformingTask, Waiting,
-OnBreak, Disabled, Fired.
-
-Задачи выдаются через серверную очередь. Один неделимый заказ не
-выполняется двумя сотрудниками одновременно. Если нет расходников или
-оборудования, сотрудник не должен бесконечно повторять невозможную
-задачу. Зарплата списывается по расписанию. Ручное управление остаётся
-доступным.
-
-14. МАГАЗИН И ИНВЕНТАРЬ Физический магазин у перекрёстка:
-15. Моющие средства.
-16. Инструменты уборки.
-17. Корзины, полки, фильтры, запасные детали.
-18. Дозатор, парогенератор, гладильная станция, сортировщик, упаковочная
-    машина.
-
-Инвентарь хранит ItemId, количество, максимальный объём, цену, тип
-использования и уровень разблокировки. Покупка и списание подтверждаются
-сервером. Нельзя потратить больше предметов, чем имеется. Доставка в
-прачечную — после MVP.
-
-15. РЕКЛАМА И АУКЦИОНЫ Виды: листовки, маленький баннер, большой
-    билборд, остановка, автобус, цифровой экран, интернет-кампания,
-    городская кампания.
-
-Реклама повышает вероятность выбора прачечной, но не создаёт клиентов из
-ниоткуда. Учитываются поток NPC, открытость, очередь и мощность.
-
-Рекламное агентство — физическое здание на карте. Игрок выбирает слот и
-срок размещения.
-
-Аукцион: слот открывается; игроки делают ставки; сервер проверяет
-средства; деньги резервируются; победитель получает слот на срок; после
-срока слот освобождается. Проигравшим возвращаются средства. Действующую
-оплаченную кампанию нельзя отнять до окончания срока. Перебивание
-возможно только во время открытого аукциона.
-
-16. ДЕНЬ, НОЧЬ, ВОРЫ И ПОЛИЦИЯ Игровой день ориентировочно длится 30–40
-    реальных минут. Время синхронизируется на сервере.
-
-Периоды: 06:00–09:00 утро; 09:00–15:00 день; 15:00–19:00 вечер;
-19:00–22:00 поздние клиенты; 22:00–02:00 ночные события; 02:00–06:00
-низкая активность. Круглосуточная прачечная может принимать посетителей
-ночью.
-
-Состояния вора: Spawned -> Approaching -> BreakingIn ->
-Stealing/Destroying -> Detected -> Escaping или Captured -> PoliceCalled
--> Arrested -> Despawned.
-
-Цели: украсть ограниченную сумму из кассы или повредить оборудование,
-мебель, дверь или окно.
-
-Обнаружение: визуально или сигналом камеры/сигнализации/охранника.
-Уведомление показывает местоположение и угрозу.
-
-Задержание: короткая QTE/шкала удержания. После захвата игрок вызывает
-полицию. Полиция приезжает по маршруту. Если вор сбежал, ущерб ограничен
-и ремонтируем. Никакой необратимой потери бизнеса.
-
-Защита: камеры, сигнализация, охранник, защищённая касса, двери, замки и
-освещение. На ранних уровнях события редкие.
-
-17. ПАРКОВКИ И ТРАНСПОРТ Типы парковок: маленькая 3 места, средняя 6,
-    большая 12, многоуровневая 25, VIP 8. Числа предварительные.
-
-Состояния места: Free, Reserved, Occupied, Leaving, Disabled.
-
-Алгоритм: автомобильный NPC выбирает прачечную; резервирует конкретное
-место; едет ко въезду; паркуется; пассажир идёт в прачечную; после
-посещения возвращается; машина уезжает; место освобождается.
-Резервирование обязательно, чтобы две машины не выбрали одно место.
-
-Улучшения: разметка, освещение, шлагбаум, камеры, зарядки
-электромобилей, VIP-места, автоматическая оплата. Пешие клиенты остаются
-полноценным источником заказов.
-
-18. НЕДВИЖИМОСТЬ, РАСШИРЕНИЕ И ПОЗДНЯЯ ИГРА Игрок покупает соседние
-    здания, ремонтирует и выбирает назначение. Можно открыть второй
-    филиал, склад, парковку, офис или дополнительную зону.
-
-Вширь: новые комнаты, зона стирки, склад, комната персонала, ожидание,
-VIP-зал. Вверх: перекрытия, лестницы, стены, окна, оборудование на новых
-этажах; лифты позднее.
-
-Пример этажей: первый — приём и обычная стирка; второй — машины и сушка;
-третий — VIP; четвёртый — офис.
-
-Поздняя игра: VIP-клиенты, корпоративные заказы от отелей и ресторанов,
-доставка белья, промышленная прачечная, сеть филиалов, менеджеры,
-франшизы, районы Suburb/Industrial District/Rich District/Harbor,
-Rebirth и сезонные события.
-
-Rebirth добровольный: часть обычного прогресса сбрасывается,
-косметические награды и постоянные бонусы сохраняются. Не реализовывать
-до стабилизации экономики.
-
-19. ИНТЕРФЕЙСЫ Постоянный HUD: Cash, Gems после открытия, уровень/XP,
-    рейтинг, игровое время, уведомления, краткая панель заказов.
-
-Контекстное взаимодействие: E на PC, крупная кнопка на мобильном,
-поддержка геймпада.
-
-Меню: Build, Business, Orders, Shop, Employees, Advertising, Security,
-Finance, Settings.
-
-Business: название, фасад, открыть/закрыть, расписание, рейтинг, поток,
-статистика, предупреждения. Order: клиент, вещи, количество, стоимость,
-дедлайн, требования, принять/отказать. Machine: состояние, вместимость,
-вещи, средство, режим, таймер, обслуживание. Build: категории, цена,
-предпросмотр, поворот, подтверждение, отмена.
-
-Уведомления: новый клиент, заказ готов, клиент вернулся, машина требует
-обслуживания, закончился порошок, обнаружен вор, реклама завершена,
-скоро налог.
-
-UI адаптивен для PC, телефонов, планшетов и геймпада. Цвет не должен
-быть единственным способом передачи состояния. Звук можно отключить.
-
-20. МОНЕТИЗАЦИЯ И МУЛЬТИПЛЕЕР Монетизация преимущественно косметическая:
-    фасады, вывески, интерьерные наборы, скины сотрудников, эффекты
-    денег, скины машин и автомобилей, VIP-дизайн парковки, слоты
-    планировок, сезонные предметы.
-
-Базовые машины, порошок и основной цикл не должны быть платными
-обязательными барьерами. Покупки подтверждаются сервером через
-MarketplaceService.
-
-Мультиплеер: у каждого игрока своя прачечная; деньги, заказы и
-собственность индивидуальны; NPC и события могут быть общими; аукционы
-конкурентные. Игрок не может менять чужие объекты или забирать чужие
-заказы. Посещение чужих прачечных и районные цели — позднее.
-
-21. ТЕХНИЧЕСКАЯ АРХИТЕКТУРА ROBLOX Luau. Сервер авторитетен для денег,
-    собственности, заказов и прогресса. Клиент отвечает за UI, ввод,
-    камеру, предпросмотр и визуальные эффекты. Общие типы/конфиги —
-    ReplicatedStorage; серверная логика — ServerScriptService; серверные
-    шаблоны — ServerStorage; клиентские контроллеры —
-    StarterPlayerScripts; UI — StarterGui.
-
-Рекомендуемая структура:
-
-ReplicatedStorage/Shared/Config: EconomyConfig, MachineConfig,
-ItemConfig, OrderConfig, EmployeeConfig, EventConfig, BuildingConfig,
-NPCConfig. ReplicatedStorage/Shared/Types: PlayerDataTypes, OrderTypes,
-MachineTypes, PropertyTypes. ReplicatedStorage/Shared/Remotes:
-RequestPurchase, RequestBuild, RequestMoveObject, RequestAcceptOrder,
-RequestDeclineOrder, RequestLoadItems, RequestStartWash,
-RequestTransferItems, RequestStartDry, RequestCollectOrder,
-RequestSetBusinessHours, RequestToggleBusiness, RequestHireEmployee,
-RequestAssignEmployee, RequestClean, RequestRepair, RequestBid,
-NotifyClient. ReplicatedStorage/Shared/Assets — общие ассеты.
-
-ServerScriptService/Server/Services: PlayerDataService, PlotService,
-PropertyService, BusinessService, BuildingService, OrderService,
-MachineService, CustomerService, EmployeeService, EconomyService,
-InventoryService, RatingService, CleanlinessService, MaintenanceService,
-SecurityService, AdvertisingService, AuctionService, ParkingService,
-TrafficService, DayNightService, NotificationService, AnalyticsService.
-
-ServerStorage/ServerAssets: NPCModels, VehicleModels, MachineModels,
-BuildingModules, EmployeeModels, EventAssets.
-
-StarterPlayer/StarterPlayerScripts/Controllers: InteractionController,
-BuildingController, OrderController, MachineController,
-CameraController, NotificationController, AudioController.
-
-StarterGui: MainHUD, BusinessMenu, BuildMenu, OrderMenu, MachineMenu,
-ShopMenu, EmployeeMenu, AdvertisingMenu, SecurityMenu, FinanceMenu,
-TutorialUI.
-
-Workspace: City/Roads, Sidewalks, Intersections, PedestrianPaths,
-VehiclePaths, Properties, Shops, AdvertisingSlots; PlayerPlots;
-ActiveNPCs; ActiveVehicles; WorldEvents.
-
-Обязанности сервисов: PlayerDataService —
-загрузка/сохранение/блокировка/миграции. PlotService — участки.
-PropertyService — покупка недвижимости. BusinessService — название,
-часы, статус. BuildingService — размещение и этажи. OrderService —
-состояния заказов, дедлайны, награды. MachineService — циклы, загрузка,
-вместимость, износ. CustomerService — NPC, выбор бизнеса, очередь.
-EmployeeService — найм, роли, задачи, зарплаты. EconomyService — деньги,
-XP, расходы, налоги. InventoryService — расходники. RatingService —
-рейтинг и отзывы. CleanlinessService — загрязнения и уборка.
-MaintenanceService — износ и ремонт. SecurityService — воры и защита.
-AdvertisingService — кампании. AuctionService — ставки. ParkingService —
-парковочные места. TrafficService — автомобили. DayNightService — время.
-NotificationService — уведомления. AnalyticsService — диагностика.
-
-RemoteEvents должны иметь понятное назначение, типы аргументов,
-серверную валидацию, rate limit и понятный ответ. Не создавать
-RemoteEvent на каждый объект. Все расстояния, права и состояния
-проверяются сервером.
-
-22. СОХРАНЕНИЯ И МОДЕЛЬ ДАННЫХ Логическая PlayerData: SchemaVersion,
-    Cash, Gems, XP, Level, PrestigeLevel, Reputation, Business{Name,
-    ExteriorStyle, IsOpen, OpeningTime, ClosingTime, Rating,
-    ServiceRating, CleanlinessRating, InteriorRating, SpeedRating,
-    ReviewRating}, Properties[], PlacedObjects[], Machines[], Inventory,
-    Employees[], Orders[], Advertising[], Upgrades[], Statistics,
-    TutorialProgress, LastSaveTimestamp.
+LAUNDRY EMPIRE — GAME DESIGN DOCUMENT (GDD)
+Single source of truth for AI-assisted development in Roblox Studio
+Version 1.0 | November 12, 2026 | Luau
+
+1. PROJECT VISION
+
+Laundry Empire is a multiplayer Roblox Simulator + Tycoon + Management game. The player starts in a small, abandoned laundromat near a shopping mall. They accept clothes from NPC customers, wash and dry them, and hand back completed orders. Then they improve equipment and interiors, hire employees, buy nearby buildings, build parking and additional floors, run advertising, protect the business at night, and grow one laundromat into an empire.
+
+The core fantasy: “I started in a dirty, empty room and washed the first clothes myself. Now I own a beautiful network of laundromats, employees serve customers, cars park outside my branches, and my business helps the district grow.”
+
+Design pillars:
+- A clear, interactive customer-service loop.
+- Visible business growth and building customization.
+- A living city with NPCs, cars, shops, and changing time of day.
+- Meaningful management of money, rating, staff, and expenses.
+- Manageable risks: queues, dirt, breakdowns, and theft.
+- Long-term progress through property, floors, branches, and Rebirth.
+
+Visual style: a full 3D Roblox world, not an isometric game; blocky Roblox avatars; low-poly environments; pastel colors with turquoise accents; freely explorable interiors; and a clear, adaptive UI.
+
+2. APPROVED DECISIONS
+
+Laundry loading — MENU: The player interacts with a basket or machine, chooses item types and quantities in a UI, and confirms loading. The character automatically plays a loading animation while clothing models visibly move into the drum. Do not require the player to drag every clothing model manually.
+
+Camera — HYBRID: Use the normal Roblox third-person camera during gameplay and a separate top-down or angled view in build mode. Restore the normal camera when build mode ends.
+
+Employees — GRADUAL: The player does the work at first. Roles unlock over time, and each role automates a distinct operation. Employees have wages, speed, level, work area, and an assigned task.
+
+Also approved:
+- The player chooses a business name and one of three cosmetic facades: Modern, Classic, or Colorful.
+- The starting laundromat is dirty, empty, worn, and dimly lit.
+- Opening the business requires a washer, dryer, and order intake counter.
+- The Laundry menu controls the business name, open/closed status, and schedule.
+- NPC customers form a queue, lose patience, and may leave.
+- The player may accept or politely decline an order.
+- Total unfinished-order capacity is limited by washer capacity.
+- Orders pass through washing, drying, packing, and pickup.
+- The game includes a shop, employees, rating, dirt, breakdowns, taxes, advertising, parking, thieves, and police.
+- The player can buy nearby buildings and expand horizontally and vertically.
+- Rebirth and new districts are late-game features.
+
+3. CORE GAMEPLAY LOOP
+
+Improve the building, equipment, or advertising → open the laundromat → attract pedestrians and drivers → accept orders → load items through the menu → choose detergent and mode → wash → dry → pack → hand over the order → receive money, XP, and a review → maintain cleanliness and equipment → reinvest the profit.
+
+A short session includes several orders, checking queues and machines, cleaning, and restocking supplies. A medium session may include hiring a worker, improving the interior, buying equipment, or running an ad campaign. A long session may include expanding the premises, buying an adjacent property, joining an auction, or handling a nighttime event.
+
+The MVP has no offline production or offline income. Orders and machine cycles run only during an active server session.
+
+4. START AND TUTORIAL
+
+The player spawns near a shopping mall and sees an abandoned laundromat. They enter a name, choose a facade, and go inside. The interior has old wallpaper, a dirty floor, weak lighting, empty space, and old windows.
+
+Tutorial steps:
+- T1: Open the build menu.
+- T2: Buy and place a washer.
+- T3: Buy and place a dryer.
+- T4: Buy and place the counter.
+- T5: Open the Laundry menu.
+- T6: Check the name and schedule.
+- T7: Open the business.
+- T8: Accept the first order.
+- T9: Process it through washing and drying.
+- T10: Hand over the order and receive the reward.
+
+The tutorial is contextual, highlights the needed object, and does not block controls for long. It is complete when the player hands over their first order without assistance.
+
+5. DOWNTOWN
+
+The starting district contains a shopping mall, main street, two-lane road, sidewalks, crosswalks, an intersection, streetlights, trees, benches, a supply shop, an advertising agency, ad locations, the starter laundromat, and abandoned buildings on both sides.
+
+Abandoned buildings have broken windows, cracks, peeling paint, trash, old signs, and overgrown lots. The player can buy and renovate them, then assign a use: laundromat, storage, parking, office, or extra area.
+
+For the MVP, individual property progression is enough. A shared district rating is a later feature.
+
+NPC types: background pedestrians, potential customers, customers with orders, drivers, and later VIP customers and corporate representatives. Cars follow predefined waypoints; do not use expensive physics for large numbers of vehicles.
+6. PROPERTY AND BUILDING
+
+Property types:
+- Small units: shops, cafes, and small commercial spaces.
+- Medium buildings: two-story units, warehouses, and offices.
+- Large lots: industrial buildings, parking areas, and logistics centers.
+
+Property states: Available → ReservedForPurchase → Owned → UnderRenovation → Operational. Additional states: Locked and Disabled.
+
+The server validates funds, availability, and ownership during a purchase. A player cannot buy another player’s property, purchase the same property twice, or lose money when a purchase fails.
+
+Build mode includes:
+- A placement grid and transparent preview.
+- Green for a valid placement and red for an invalid placement.
+- Rotate, confirm, and cancel controls.
+- Lot-boundary and overlap checks.
+- Server validation of coordinates and price.
+- Saving of position, rotation, and floor.
+
+Categories: equipment; intake; storage; interior; lighting; sanitation; security; walls, windows, doors, stairs, floors, and roofs; parking lines and barriers.
+
+Vertical expansion requires floors, stairs, walls, and windows. Elevators and connecting separate buildings are post-MVP. Expensive decor must not be required for a good rating.
+
+7. NPC CUSTOMERS AND STATES
+
+Customer data: CustomerId, CustomerType, AppearanceId, PreferredService, Patience, Mood, ChosenBusinessId, CurrentState, OrderId, ArrivalTime, ReturnTime, TargetPosition.
+
+States:
+Spawned — created.
+Walking — following a route.
+Browsing — looking around the street.
+Interested — noticed a sign.
+ApproachingBusiness — walking to a laundromat.
+Entering — entering the building.
+JoiningQueue — taking a place in the queue.
+Waiting — waiting.
+Impatient — becoming irritated.
+Leaving — leaving.
+OrderAccepted — order accepted; customer exits the premises.
+AwayWithOrder — waiting for the order to be ready.
+Returning — coming back.
+WaitingForPickup — waiting for handoff.
+Satisfied — received the clothes and is happy.
+Dissatisfied — left a negative review.
+Completed — interaction finished.
+Despawned — model removed.
+
+A customer chooses a laundromat based on attractiveness, reputation, advertising, distance, cleanliness, whether it is open, queue length, and parking.
+
+Example formula:
+ChoiceScore = 0.25 Attractiveness + 0.25 Reputation + 0.15 Advertising + 0.15 Accessibility + 0.10 Cleanliness + 0.10 ParkingBonus − DistancePenalty
+
+Weights are configurable; normalize probabilities across available laundromats.
+
+Limit active NPCs. Background NPCs may use simplified behavior. Stuck NPCs need a timeout and a path retry.
+
+8. ORDERS, QUEUE, AND PATIENCE
+
+Order card: customer, item list, quantity, service, payment, estimated time, requirements, Accept button, and Decline button.
+
+Order states: Offered, Accepted, WaitingForWash, Washing, WaitingForDryer, Drying, Finishing, ReadyForPickup, Completed, Failed, Cancelled. OrderService controls transitions. An order cannot jump directly from Offered to Completed.
+
+Queue rules:
+- NPCs queue in arrival order.
+- Each customer has Patience and WaitTime.
+- Patience gradually decreases.
+- Mood states: calm, worried, annoyed, leaving.
+- Show patience above the NPC or in the UI.
+- At zero patience, the NPC leaves and creates a negative-review event.
+- The queue has a limit; new visitors may pass by when it is full.
+
+A polite decline before accepting an order is not an order failure and should not carry the same penalty as ignoring a customer. Show the player the reason for declining.
+
+After accepting an order, the customer may leave and return later. The order is its own entity and does not disappear with the NPC.
+
+Orders have EstimatedReadyAt and CustomerReturnAt. If the customer returns before the order is ready, they wait for extra time. Once pickup patience expires, the player may receive a payment penalty and a negative review. Show the player an estimated time.
+
+Capacity rules:
+- Each item has CapacityUnits.
+- Each washer has CapacityUnits.
+- UnfinishedUnits is the total units in all accepted orders that have not been handed over.
+- AvailableUnits is the total available capacity of working washers minus UnfinishedUnits.
+- Accept an order only when UnfinishedUnits + NewOrderUnits <= TotalAvailableUnits.
+- The server performs this check.
+- For the MVP, count every unfinished order, including items in baskets, washers, and dryers.
+- A breakdown does not remove an order that was already accepted.
+
+9. WASHING, DRYING, AND PICKUP
+
+Menu-based loading is the approved method. The player interacts with a basket or machine, chooses item types and quantities, and presses Load. The server validates machine ownership, state, item availability, capacity, compatibility, and that the items have not already been loaded. The character plays an animation while clothing models visibly move into the drum.
+
+Item types: T-shirts, jeans, towels, shirts, bed linen, and delicate items.
+
+Products: regular detergent, professional detergent, delicate-fabric detergent, fabric softener, bleach, stain remover, and fragrance. Each product has ItemId, price, stock, quality bonus, compatible fabrics, and an unlock level. Consumables are used up; a required cycle cannot start without the required product.
+
+Wash modes:
+- Quick — shorter cycle.
+- Normal — balance between time and quality.
+- Delicate — for sensitive fabrics.
+- Intensive — for heavy soil.
+
+Machine states: Idle, Loading, ReadyToStart, Washing, CycleComplete, Unloading, NeedsMaintenance, Broken, Repairing, Disabled.
+
+After washing, the player selects items in the dryer menu. The character carries them with an animation. A dryer has capacity and a timer. A drying rack is cheaper, but slower and takes up space.
+
+After drying, the player gathers and packs the order through a menu or interactive table. Its status becomes ReadyForPickup. When the customer returns, the player presses Hand Over. The server checks that the order is ready and grants payment and XP exactly once.
+
+Quality depends on the correct mode and product, equipment condition, timeliness, and optional services. A small mistake must not destroy the entire order.
+
+10. EQUIPMENT AND BREAKDOWNS
+
+Machine parameters: MachineId, MachineType, Capacity, CycleDurationMultiplier, QualityMultiplier, Wear, Condition, Durability, CurrentOrderIds, CurrentCycleEndTime, OwnerId, PropertyId.
+
+Wear increases after cycles and may depend on the selected mode. At a threshold, the machine warns that maintenance is required. Ignoring the warning increases the chance of a breakdown.
+
+States: Working → NeedsMaintenance → Broken → Repairing → Working.
+
+On breakdown, the cycle stops or enters an emergency state. Items and orders are preserved, and the player sees which orders were affected. The player can call a mechanic or move items to a free compatible machine. Repairs have a cost and duration. Preventive maintenance is cheaper than emergency repair.
+11. RATING, REVIEWS, AND CLEANLINESS
+
+Rating is 0–100 and includes:
+- ServiceRating — service.
+- CleanlinessRating — cleanliness.
+- InteriorRating — interior.
+- SpeedRating — speed.
+- ReviewRating — reviews.
+
+Starting weights: service 30%, cleanliness 20%, interior 15%, speed 20%, reviews 15%. All weights are configurable.
+
+Positive review: the order was on time and good quality. Neutral review: ordinary experience. Negative review: waiting, lateness, poor quality, or dirt.
+
+NPCs may leave paper, cups, packaging, shoe marks, and stains. The player cleans with a broom, mop, or vacuum. Bins help NPCs dispose of trash properly but may need to be emptied.
+
+Create and remove dirt through events; do not recalculate it every frame. Long-lasting dirt lowers the rating. Decor includes plants, sofas, TVs, pictures, clocks, neon, lights, flooring, wallpaper, and windows. Limit the bonus from duplicate items.
+
+12. ECONOMY, XP, AND PROGRESSION
+
+Currencies: Cash is the main game currency. Gems are premium currency for cosmetics and optional conveniences.
+
+Cash sources: completed orders, tips, parking fees (if paid), optional services, and later corporate orders and events. Expenses: equipment, consumables, property, repairs, wages, taxes, advertising, construction, decor, and parking.
+
+XP is primarily awarded for completed orders. Cleaning, repairs, and events may grant extra XP, but repeated clicks must not grant infinite experience.
+
+Levels unlock machines, products, decor, employees, advertising, expansion, and property types. Some unlocks also require money, rating, or achievements.
+
+Charge taxes on a clear schedule, such as at the end of a game day. Show an estimate in advance. A new player must not unexpectedly lose their starting capital. If funds are insufficient, use a warning or limited debt instead of deleting the business.
+
+Finance panel: balance, daily income, expenses, net profit, wages, purchases, repairs, taxes, advertising, and parking.
+
+Starting playtest hypotheses:
+- Starting Cash: 2,500–4,000.
+- Basic washer: 700–1,000.
+- Dryer: 500–800.
+- Counter: 200–350.
+- Regular detergent: 20–40.
+- Cleaning tool: 100–250.
+- Decor item: 50–150.
+- Average order: 80–150.
+- Starting queue: 2–3 NPCs.
+- Full game day: 30–40 real minutes.
+- Basic machine capacity: about 8 CapacityUnits.
+All values are hypotheses stored in configuration.
+
+Target feel: the first order is quick; the player sees their first money within minutes; the first upgrade is reachable without grinding; automation unlocks after the player learns the manual loop; expenses create choices without constant financial anxiety; and penalties have clear causes.
+
+13. EMPLOYEES AND AUTOMATION
+
+Roles:
+- Cashier — queue, order intake, and handoff.
+- Washer — load and start wash cycles.
+- Dryer — move items to dryers.
+- Packer — pack orders.
+- Cleaner — clean.
+- Mechanic — maintenance and repairs.
+- SecurityGuard — respond to threats.
+- Manager — later, manage areas or branches.
+
+Parameters: EmployeeId, Role, Level, WorkSpeed, Salary, Efficiency, AssignedTask, WorkZone, ShiftStart, ShiftEnd, Status, Experience.
+
+States: Available, Working, MovingToTask, PerformingTask, Waiting, OnBreak, Disabled, Fired.
+
+Assign tasks through a server-managed queue. One indivisible order cannot be processed by two employees at the same time. If supplies or equipment are unavailable, the employee must not repeat an impossible task forever. Pay wages on a schedule. Keep manual controls available.
+
+14. SHOP AND INVENTORY
+
+Physical shop near the intersection:
+- Cleaning products.
+- Cleaning tools.
+- Baskets, shelves, filters, and spare parts.
+- Dispensers, steam generators, ironing stations, sorters, and packing machines.
+
+Inventory stores ItemId, quantity, maximum volume, price, usage type, and unlock level. The server confirms purchases and consumption. A player cannot use more items than they own. Delivery to the laundromat is post-MVP.
+
+15. ADVERTISING AND AUCTIONS
+
+Ad types: flyers, small banner, large billboard, bus stop, bus, digital screen, online campaign, city-wide campaign.
+
+Advertising raises the chance that customers choose the laundromat; it does not create customers from nowhere. Consider NPC traffic, whether the business is open, queue size, and capacity.
+
+The advertising agency is a physical building on the map. The player chooses an ad slot and duration.
+
+Auction flow: a slot opens; players bid; the server validates funds; funds are reserved; the winner receives the slot for the selected duration; then the slot is released. Refund losing bids. Do not take an active, paid campaign before it expires. A bid may be outbid only during an open auction.
+16. DAY, NIGHT, THIEVES, AND POLICE
+
+A game day lasts about 30–40 real minutes. The server synchronizes the time.
+
+Periods: 06:00–09:00 morning; 09:00–15:00 daytime; 15:00–19:00 evening; 19:00–22:00 late customers; 22:00–02:00 night events; 02:00–06:00 low activity. A 24-hour laundromat may accept visitors at night.
+
+Thief states: Spawned → Approaching → BreakingIn → Stealing/Destroying → Detected → Escaping or Captured → PoliceCalled → Arrested → Despawned.
+
+Targets: steal a limited amount of cash from the register or damage equipment, furniture, a door, or a window.
+
+Detection: visual detection or a camera, alarm, or guard signal. The notification shows the threat and its location.
+
+Capture: a short QTE/hold meter. After capture, the player calls the police. Police arrive by route. If the thief escapes, the damage is limited and repairable. The player must never lose the entire business.
+
+Protection: cameras, alarms, guards, a protected register, doors, locks, and lighting. Events are rare at early levels.
+
+17. PARKING AND TRANSPORT
+
+Parking sizes: small — 3 spaces; medium — 6; large — 12; multi-level — 25; VIP — 8. These counts are preliminary.
+
+Space states: Free, Reserved, Occupied, Leaving, Disabled.
+
+Flow: a driver NPC chooses a laundromat; reserves a specific space; drives to the entrance; parks; the passenger walks to the laundromat; after the visit, returns to the car; the car leaves; the space becomes free. Reservations are required so two cars cannot choose the same space.
+
+Upgrades: painted lines, lighting, barrier gate, cameras, EV charging, VIP spaces, automatic payment. Pedestrian customers remain a full source of orders.
+
+18. PROPERTY, EXPANSION, AND LATE GAME
+
+The player buys nearby buildings, renovates them, and chooses their use. They can open another branch, warehouse, parking area, office, or extra space.
+
+Horizontal expansion: new rooms, wash area, storage, staff room, waiting area, VIP lounge. Vertical expansion: floors, stairs, walls, windows, and equipment on new floors; elevators come later.
+
+Example floor plan: first floor — intake and standard washing; second — machines and drying; third — VIP; fourth — office.
+
+Late game: VIP customers, corporate orders from hotels and restaurants, linen delivery, industrial laundromat, branch network, managers, franchises, Suburb/Industrial District/Rich District/Harbor districts, Rebirth, and seasonal events.
+
+Rebirth is voluntary: some regular progress resets, while cosmetic rewards and permanent bonuses remain. Do not implement Rebirth until the economy is stable.
+
+19. INTERFACES
+
+Persistent HUD: Cash, Gems after unlock, level/XP, rating, game time, notifications, and a compact order panel.
+
+Context interaction: E on PC, a large button on mobile, and gamepad support.
+
+Menus: Build, Business, Orders, Shop, Employees, Advertising, Security, Finance, Settings.
+
+Business: name, facade, open/close, schedule, rating, traffic, statistics, warnings.
+Order: customer, items, quantity, cost, deadline, requirements, accept/decline.
+Machine: state, capacity, items, product, mode, timer, maintenance.
+Build: categories, price, preview, rotate, confirm, cancel.
+
+Notifications: new customer, order ready, customer returned, machine maintenance needed, detergent out of stock, thief detected, campaign ended, tax due soon.
+
+The UI adapts to PC, phones, tablets, and gamepads. Color must not be the only way to communicate a state. Sound can be turned off.
+
+20. MONETIZATION AND MULTIPLAYER
+
+Monetization is primarily cosmetic: facades, signs, interior sets, employee skins, money effects, machine and car skins, VIP parking design, layout slots, and seasonal items.
+
+Basic machines, detergent, and the core loop must not be paywalled. The server confirms purchases through MarketplaceService.
+
+Multiplayer: each player has their own laundromat; money, orders, and property are individual; NPCs and events may be shared; auctions are competitive. A player cannot change another player’s objects or take another player’s orders. Visiting other laundromats and district goals are later features.
+21. ROBLOX TECHNICAL ARCHITECTURE
+
+Use Roblox Luau. The server is authoritative for money, property, orders, and progression. The client handles UI, input, camera, previews, and visual effects. Shared types/configs go in ReplicatedStorage; server logic in ServerScriptService; server templates in ServerStorage; client controllers in StarterPlayerScripts; UI in StarterGui.
+
+Recommended structure:
+
+ReplicatedStorage/Shared/Config: EconomyConfig, MachineConfig, ItemConfig, OrderConfig, EmployeeConfig, EventConfig, BuildingConfig, NPCConfig.
+ReplicatedStorage/Shared/Types: PlayerDataTypes, OrderTypes, MachineTypes, PropertyTypes.
+ReplicatedStorage/Shared/Remotes: RequestPurchase, RequestBuild, RequestMoveObject, RequestAcceptOrder, RequestDeclineOrder, RequestLoadItems, RequestStartWash, RequestTransferItems, RequestStartDry, RequestCollectOrder, RequestSetBusinessHours, RequestToggleBusiness, RequestHireEmployee, RequestAssignEmployee, RequestClean, RequestRepair, RequestBid, NotifyClient.
+ReplicatedStorage/Shared/Assets: shared assets.
+
+ServerScriptService/Server/Services: PlayerDataService, PlotService, PropertyService, BusinessService, BuildingService, OrderService, MachineService, CustomerService, EmployeeService, EconomyService, InventoryService, RatingService, CleanlinessService, MaintenanceService, SecurityService, AdvertisingService, AuctionService, ParkingService, TrafficService, DayNightService, NotificationService, AnalyticsService.
+
+ServerStorage/ServerAssets: NPCModels, VehicleModels, MachineModels, BuildingModules, EmployeeModels, EventAssets.
+
+StarterPlayer/StarterPlayerScripts/Controllers: InteractionController, BuildingController, OrderController, MachineController, CameraController, NotificationController, AudioController.
+
+StarterGui: MainHUD, BusinessMenu, BuildMenu, OrderMenu, MachineMenu, ShopMenu, EmployeeMenu, AdvertisingMenu, SecurityMenu, FinanceMenu, TutorialUI.
+
+Workspace: City/Roads, Sidewalks, Intersections, PedestrianPaths, VehiclePaths, Properties, Shops, AdvertisingSlots; PlayerPlots; ActiveNPCs; ActiveVehicles; WorldEvents.
+
+Service responsibilities:
+- PlayerDataService — load/save, locking, migrations.
+- PlotService — plots.
+- PropertyService — property purchases.
+- BusinessService — name, hours, status.
+- BuildingService — placement and floors.
+- OrderService — order states, deadlines, rewards.
+- MachineService — cycles, loading, capacity, wear.
+- CustomerService — NPCs, business selection, queue.
+- EmployeeService — hiring, roles, tasks, wages.
+- EconomyService — money, XP, expenses, taxes.
+- InventoryService — consumables.
+- RatingService — rating and reviews.
+- CleanlinessService — dirt and cleaning.
+- MaintenanceService — wear and repairs.
+- SecurityService — thieves and protection.
+- AdvertisingService — campaigns.
+- AuctionService — bids.
+- ParkingService — parking spaces.
+- TrafficService — vehicles.
+- DayNightService — time.
+- NotificationService — notifications.
+- AnalyticsService — diagnostics.
+
+RemoteEvents need a clear purpose, argument types, server-side validation, rate limits, and clear replies. Do not create one RemoteEvent per object. The server validates every distance, permission, and state.
+
+22. SAVES AND DATA MODEL
+
+Logical PlayerData: SchemaVersion, Cash, Gems, XP, Level, PrestigeLevel, Reputation, Business{Name, ExteriorStyle, IsOpen, OpeningTime, ClosingTime, Rating, ServiceRating, CleanlinessRating, InteriorRating, SpeedRating, ReviewRating}, Properties[], PlacedObjects[], Machines[], Inventory, Employees[], Orders[], Advertising[], Upgrades[], Statistics, TutorialProgress, LastSaveTimestamp.
 
 Property: PropertyId, Type, Purchased, Floors, Condition, ExpansionData.
-PlacedObject: ObjectId, ItemType, PropertyId, Position, Rotation, Floor,
-Durability, Condition. Machine: MachineId, MachineType, Capacity,
-Condition, Wear, CurrentCycle. Employee: EmployeeId, Role, Level,
-AssignedTask, WorkZone, Salary, Efficiency. Order: OrderId, Items,
-Status, AcceptedAt, Deadline, Quality, Payment, CustomerReturnAt.
+PlacedObject: ObjectId, ItemType, PropertyId, Position, Rotation, Floor, Durability, Condition.
+Machine: MachineId, MachineType, Capacity, Condition, Wear, CurrentCycle.
+Employee: EmployeeId, Role, Level, AssignedTask, WorkZone, Salary, Efficiency.
+Order: OrderId, Items, Status, AcceptedAt, Deadline, Quality, Payment, CustomerReturnAt.
 
-DataStore: - использовать DataStoreService и pcall; - UpdateAsync для
-безопасных обновлений; - блокировать профиль от одновременной загрузки в
-нескольких серверах; - autosave по интервалу из конфига; - сохранять при
-PlayerRemoving и BindToClose; - сохранять критические операции после
-покупки, выдачи и изменения собственности; - не сохранять каждый
-визуальный тик; - SchemaVersion и миграции обязательны; - при ошибке не
-сообщать об успешном сохранении; - retry с ограничением и backoff; - не
-сохранять временные NPC-модели и эффекты.
+DataStore requirements:
+- Use DataStoreService and pcall.
+- Use UpdateAsync for safe updates.
+- Lock profiles against simultaneous loading on multiple servers.
+- Autosave at the configured interval.
+- Save on PlayerRemoving and BindToClose.
+- Save critical operations after purchases, handoff, and ownership changes.
+- Do not save every visual tick.
+- SchemaVersion and migrations are mandatory.
+- Do not report a save as successful after an error.
+- Retry with limits and backoff.
+- Do not save temporary NPC models or effects.
 
-При повторном входе восстановить незавершённые заказы и состояния машин.
-Не начислять награду повторно. Оффлайн-таймеры не завершают стирку в
-MVP.
+On rejoin, restore unfinished orders and machine states. Never grant a reward twice. Offline timers do not complete washing cycles in the MVP.
 
-Каждая денежная операция и выдача имеют уникальный
-TransactionId/OrderId. Повторный запрос не должен повторно начислять или
-списывать валюту.
+Give each money operation and handoff a unique TransactionId/OrderId. A repeated request must not grant or charge currency twice.
 
-23. БЕЗОПАСНОСТЬ И АНТИЭКСПЛОЙТ Деньги, XP, рейтинг и собственность
-    меняются только сервером. Клиент не определяет цену/награду,
-    владельца участка или результат покупки. Сервер проверяет
-    расстояние, права, состояние объекта, деньги, инвентарь, типы
-    аргументов и частоту RemoteEvent. Ставки аукциона и покупки
-    MarketplaceService подтверждаются сервером. Локальные таймеры
-    клиента не являются источником истины. Важные транзакции логируются.
+23. SECURITY AND ANTI-EXPLOIT
 
-24. ПРОИЗВОДИТЕЛЬНОСТЬ Ограничивать NPC и автомобили; использовать
-    pooling; упрощать дальних NPC; применять централизованные
-    обновления; включить StreamingEnabled для большой карты; не
-    создавать чрезмерно много физических деталей и динамических
-    источников света; статические объекты Anchored; использовать простые
-    коллизии; не реплицировать лишние данные; визуальные эффекты делать
-    локально, если они не влияют на результат; тестировать PC и
-    мобильные устройства.
+Only the server changes money, XP, rating, and ownership. The client does not determine price, reward, plot owner, or purchase result. The server validates distance, permissions, object state, funds, inventory, argument types, and RemoteEvent frequency. The server confirms auction bids and MarketplaceService purchases. Client timers are not authoritative. Log important transactions.
 
-================================================================ 25.
-ПЛАН РАЗРАБОТКИ И ЧЕК-ПОИНТЫ
-================================================================
+24. PERFORMANCE
 
-ЭТАП 0 — АУДИТ [ ] Изучить Explorer и текущий place. [ ] Проверить
-скрипты, модели, RemoteEvents и UI. [ ] Составить карту готовых систем.
-[ ] Создать README.md, TODO.md, CHANGELOG.md, DECISIONS.md. [ ]
-Зафиксировать стиль, сетку и правила именования. PASS: проект
-запускается, дубликатов нет, структура и риски задокументированы.
+Limit NPCs and cars; use pooling; simplify distant NPCs; use centralized updates; enable StreamingEnabled for a large map; avoid excessive physical parts and dynamic lights; anchor static objects; use simple collision; avoid replicating unnecessary data; keep visual effects local when they do not affect gameplay results; test on PC and mobile devices.
+25. DEVELOPMENT PLAN AND CHECKPOINTS
 
-ЭТАП 1 — СТАРТОВЫЙ МИР [ ] Создать улицу и помещение. [ ] Назначать
-уникальный участок. [ ] Выбор названия и трёх фасадов. [ ] Создать
-разрушенный интерьер. [ ] Базовый PlayerData и сохранение. PASS: игрок
-получает уникальный участок; выбор сохраняется после перезахода.
+PHASE 0 — AUDIT
+- [ ] Inspect Explorer and the current place.
+- [ ] Check scripts, models, RemoteEvents, and UI.
+- [ ] Map completed systems.
+- [ ] Create README.md, TODO.md, CHANGELOG.md, and DECISIONS.md.
+- [ ] Record style, grid, and naming rules.
+PASS: The project starts, has no duplicates, and its structure and risks are documented.
 
-ЭТАП 2 — СТРОИТЕЛЬСТВО [ ] Build UI. [ ] Гибридная камера. [ ] Сетка и
-preview. [ ] Поворот, отмена, подтверждение. [ ] Серверная проверка
-границ и коллизий. [ ] Стиралка, сушилка, стойка. [ ] Меню Business. [ ]
-Сохранение планировки. PASS: оборудование размещается корректно и
-восстанавливается после перезахода.
+PHASE 1 — STARTING WORLD
+- [ ] Build the street and laundromat.
+- [ ] Assign a unique plot.
+- [ ] Add business name and three facade choices.
+- [ ] Create the worn interior.
+- [ ] Add basic PlayerData and saving.
+PASS: Each player receives a unique plot, and choices persist after rejoining.
 
-ЭТАП 3 — ОДИН ПОЛНЫЙ ЗАКАЗ [ ] Один тип NPC и заказа. [ ]
-Принять/отказать. [ ] Меню загрузки. [ ] Выбор порошка и режима. [ ]
-Стирка. [ ] Перенос в сушилку. [ ] Сушка. [ ] Упаковка и выдача. [ ]
-Деньги и XP. [ ] Защита от повторной оплаты. PASS: один заказ проходит
-весь цикл без вмешательства разработчика.
+PHASE 2 — BUILDING
+- [ ] Build UI.
+- [ ] Hybrid camera.
+- [ ] Grid and preview.
+- [ ] Rotate, cancel, confirm.
+- [ ] Server validation of boundaries and collisions.
+- [ ] Washer, dryer, counter.
+- [ ] Business menu.
+- [ ] Save the layout.
+PASS: Equipment is placed correctly and restored after rejoining.
 
-ЭТАП 4 — ОЧЕРЕДЬ И NPC [ ] Несколько внешностей NPC. [ ] Маршруты. [ ]
-Очередь и лимит. [ ] Терпение и настроение. [ ] Индикаторы. [ ] Уход и
-отзывы. [ ] Возвращение за заказом. [ ] Проверка общей вместимости.
-PASS: NPC приходят, ждут, уходят и возвращаются; заказ не теряется.
+PHASE 3 — ONE COMPLETE ORDER
+- [ ] One NPC and order type.
+- [ ] Accept/decline.
+- [ ] Loading menu.
+- [ ] Detergent and mode selection.
+- [ ] Washing.
+- [ ] Transfer to dryer.
+- [ ] Drying.
+- [ ] Packing and handoff.
+- [ ] Money and XP.
+- [ ] Protection against duplicate payment.
+PASS: One order completes its full cycle without developer intervention.
 
-ЭТАП 5 — РЕЙТИНГ И ЧИСТОТА [ ] Компоненты рейтинга. [ ] Отзывы. [ ]
-Мусор и пятна. [ ] Ручная уборка. [ ] Мусорки. [ ] Декорации и
-освещение. PASS: грязь убирается, рейтинг меняется предсказуемо.
+PHASE 4 — QUEUE AND NPCs
+- [ ] Multiple NPC appearances.
+- [ ] Routes.
+- [ ] Queue and limit.
+- [ ] Patience and mood.
+- [ ] Indicators.
+- [ ] Leaving and reviews.
+- [ ] Return for pickup.
+- [ ] Total capacity validation.
+PASS: NPCs arrive, wait, leave, and return; orders are preserved.
 
-ЭТАП 6 — МАГАЗИН [ ] Магазин на карте. [ ] UI магазина. [ ] Инвентарь
-порошков. [ ] Покупка и расход. [ ] Уведомление о низком запасе. PASS:
-товар покупается, сохраняется и расходуется один раз.
+PHASE 5 — RATING AND CLEANLINESS
+- [ ] Rating components.
+- [ ] Reviews.
+- [ ] Trash and stains.
+- [ ] Manual cleaning.
+- [ ] Bins.
+- [ ] Decor and lighting.
+PASS: Dirt can be cleaned and rating changes predictably.
 
-ЭТАП 7 — ЭКОНОМИКА [ ] Cash, XP, уровни. [ ] Разблокировки. [ ] Зарплаты
-и расходы. [ ] Вода/электричество. [ ] Налоги. [ ] Финансовая панель. [
-] Журнал транзакций. PASS: экономика объяснима; нет дублирования денег;
-новичок не попадает в безвыходный минус.
+PHASE 6 — SHOP
+- [ ] Shop in the world.
+- [ ] Shop UI.
+- [ ] Detergent inventory.
+- [ ] Purchases and consumption.
+- [ ] Low-stock warning.
+PASS: Items can be purchased, saved, and consumed once.
 
-ЭТАП 8 — ПОЛОМКИ [ ] Износ. [ ] Предупреждения. [ ] Поломка. [ ]
-Сохранение вещей в машине. [ ] Вызов механика. [ ] Ремонт и
-профилактика. PASS: поломка не уничтожает заказ, ремонт возвращает
-машину в работу.
+PHASE 7 — ECONOMY
+- [ ] Cash, XP, levels.
+- [ ] Unlocks.
+- [ ] Wages and expenses.
+- [ ] Water/electricity.
+- [ ] Taxes.
+- [ ] Finance panel.
+- [ ] Transaction ledger.
+PASS: The economy is understandable, money is never duplicated, and a new player cannot get trapped in an unrecoverable deficit.
 
-ЭТАП 9 — СОТРУДНИКИ [ ] Найм и увольнение. [ ] Роли. [ ] Рабочие зоны. [
-] Очередь задач. [ ] Производительность. [ ] Зарплата. [ ] Сохранение
-назначений. PASS: сотрудник выполняет допустимую задачу и не дублирует
-работу.
+PHASE 8 — BREAKDOWNS
+- [ ] Wear.
+- [ ] Warnings.
+- [ ] Breakdown.
+- [ ] Preserve items in machines.
+- [ ] Call mechanic.
+- [ ] Repair and maintenance.
+PASS: A breakdown does not destroy orders; repair restores the machine.
 
-ЭТАП 10 — ГОРОД [ ] День/ночь. [ ] Освещение. [ ] Пешеходы. [ ]
-Автомобили и маршруты. [ ] Парковки и резервирование. [ ]
-Автомобилисты-клиенты. PASS: город живой; машины не блокируют движение;
-парковочные места не дублируются.
+PHASE 9 — EMPLOYEES
+- [ ] Hire and fire.
+- [ ] Roles.
+- [ ] Work zones.
+- [ ] Task queue.
+- [ ] Performance.
+- [ ] Wages.
+- [ ] Save assignments.
+PASS: An employee performs a valid task without duplicating work.
 
-ЭТАП 11 — БЕЗОПАСНОСТЬ [ ] Ночные события. [ ] Воры и состояния. [ ]
-Сигнализация и камеры. [ ] Задержание. [ ] Вызов полиции. [ ] Охранник.
-[ ] Ремонт ущерба. PASS: событие можно обнаружить, остановить и
-завершить; ущерб ограничен.
+PHASE 10 — CITY
+- [ ] Day/night.
+- [ ] Lighting.
+- [ ] Pedestrians.
+- [ ] Cars and routes.
+- [ ] Parking and reservations.
+- [ ] Driver customers.
+PASS: The city feels alive, cars do not block traffic, and parking spaces are not double-booked.
 
-ЭТАП 12 — НЕДВИЖИМОСТЬ [ ] Карточки участков. [ ] Покупка соседних
-зданий. [ ] Восстановление. [ ] Назначение типа бизнеса. [ ] Расширение
-вширь. [ ] Стены, окна, лестницы и этажи. [ ] Сохранение нескольких
-помещений. PASS: игрок покупает и восстанавливает здание; чужая
-собственность защищена.
+PHASE 11 — SECURITY
+- [ ] Night events.
+- [ ] Thieves and states.
+- [ ] Alarms and cameras.
+- [ ] Capture.
+- [ ] Call police.
+- [ ] Guard.
+- [ ] Repair damage.
+PASS: Events can be detected, stopped, and resolved; damage is limited.
 
-ЭТАП 13 — РЕКЛАМА [ ] Агентство. [ ] Рекламные места. [ ] Кампании и
-сроки. [ ] Эффект на клиентов. [ ] Аукционы. [ ] Резервирование ставок.
-[ ] Возврат проигравшим. PASS: ставки серверные; слот защищён на срок
-оплаченной кампании.
+PHASE 12 — PROPERTY
+- [ ] Property cards.
+- [ ] Buy adjacent buildings.
+- [ ] Renovation.
+- [ ] Choose business type.
+- [ ] Horizontal expansion.
+- [ ] Walls, windows, stairs, floors.
+- [ ] Save multiple premises.
+PASS: Players can buy and renovate buildings; other players’ property is protected.
 
-ЭТАП 14 — РЕЛИЗНАЯ ПОЛИРОВКА [ ] UI PC и мобильный. [ ] Поддержка
-геймпада. [ ] Звуки и анимации. [ ] Оптимизация. [ ] Проверка
-сохранений. [ ] Мультиплеерные тесты. [ ] Проверка RemoteEvents. [ ]
-Исправление критических багов. [ ] Иконка, превью и описание. [ ]
-Тестовая публикация. PASS: новый игрок проходит основной цикл; прогресс
-сохраняется; нет критических эксплойтов и блокирующих ошибок.
+PHASE 13 — ADVERTISING
+- [ ] Agency.
+- [ ] Ad slots.
+- [ ] Campaigns and durations.
+- [ ] Customer effect.
+- [ ] Auctions.
+- [ ] Reserve bids.
+- [ ] Refund losing bids.
+PASS: Bids are server-controlled and a slot stays reserved for the paid campaign duration.
 
-================================================================ 26.
-ТЕСТИРОВАНИЕ И КРИТЕРИИ MVP
-================================================================
+PHASE 14 — RELEASE POLISH
+- [ ] PC and mobile UI.
+- [ ] Gamepad support.
+- [ ] Sounds and animations.
+- [ ] Optimization.
+- [ ] Save checks.
+- [ ] Multiplayer tests.
+- [ ] RemoteEvent checks.
+- [ ] Critical bug fixes.
+- [ ] Icon, thumbnail, and description.
+- [ ] Test publish.
+PASS: A new player completes the core loop, progress saves, and there are no critical exploits or blocking errors.
 
-Функциональные тесты: - новый игрок проходит обучение; - повторный игрок
-загружает сохранение; - нельзя купить чужой участок; - нельзя строить за
-границами; - нельзя принять заказ сверх вместимости; - нельзя загрузить
-несуществующие вещи; - нельзя запустить сломанную машину; - нельзя
-выдать неготовый заказ; - нельзя получить оплату дважды; - нельзя купить
-без денег; - нельзя использовать отрицательный остаток; - нельзя
-назначить две машины на одно парковочное место; - нельзя выиграть один
-рекламный слот дважды; - заказ не исчезает при выходе игрока.
+26. TESTING AND MVP CRITERIA
 
-Отказоустойчивость: - DataStore недоступен; - игрок выходит во время
-стирки или ремонта; - сервер закрывается с активными заказами; -
-RemoteEvent отправлен повторно; - NPC застрял; - машина не нашла
-парковку; - сотрудник не может выполнить задачу.
+Functional tests:
+- A new player completes the tutorial.
+- A returning player loads saved progress.
+- A player cannot buy another player’s plot.
+- A player cannot build outside the plot.
+- A player cannot accept an order beyond capacity.
+- A player cannot load items they do not own.
+- A broken machine cannot start.
+- An unfinished order cannot be handed over.
+- Payment cannot be collected twice.
+- A purchase cannot succeed without funds.
+- Inventory cannot become negative.
+- Two machines cannot reserve the same parking space.
+- One ad slot cannot be won twice.
+- An order does not disappear when its player leaves.
 
-Мультиплеер: - игроки получают разные участки; - нельзя изменять чужие
-объекты; - NPC не дублируются бесконтрольно; - аукцион корректно
-обрабатывает одновременные ставки; - время синхронизировано.
+Failure handling:
+- DataStore is unavailable.
+- A player leaves during washing or repair.
+- A server closes with active orders.
+- A RemoteEvent is sent repeatedly.
+- An NPC gets stuck.
+- A car cannot find parking.
+- An employee cannot perform a task.
 
-MVP готов, когда игрок создаёт прачечную, ставит три обязательных
-объекта, открывает её, принимает NPC-заказ, загружает вещи через меню,
-выбирает средство и режим, завершает стирку и сушку, упаковывает и
-выдаёт вещи, получает награду, улучшает бизнес и сохраняет прогресс.
+Multiplayer:
+- Players receive different plots.
+- Players cannot change other players’ objects.
+- NPCs are not duplicated without limit.
+- Auctions handle simultaneous bids correctly.
+- Time is synchronized.
 
-Необязательно для MVP: аукционы, сложная полиция, несколько районов,
-Rebirth, корпоративные заказы, доставка, промышленная фабрика, сложная
-многоэтажность, оффлайн-доход.
+The MVP is ready when a player creates a laundromat, places the three required objects, opens it, accepts an NPC order, loads items through the menu, chooses detergent and a mode, finishes washing and drying, packs and hands over the items, receives a reward, improves the business, and saves progress.
 
-================================================================ 27.
-ПРАВИЛА РАБОТЫ ИИ-АГЕНТА
-================================================================
+Not required for MVP: auctions, complex police, multiple districts, Rebirth, corporate orders, delivery, industrial factory, complex multi-floor systems, and offline income.
 
-Перед задачей: 1. Прочитать GDD. 2. Проверить текущую структуру проекта.
-3. Убедиться, что функция ещё не реализована. 4. Найти зависимости и
-конфиги. 5. Определить минимальный безопасный объём изменений. 6.
-Сформулировать критерии проверки.
+27. AI AGENT WORK RULES
 
-Во время работы: - делать небольшие изменения; - не переписывать целые
-системы без необходимости; - использовать Luau-типы, где это полезно; -
-баланс выносить в конфиги; - разделять серверную логику и клиентское
-представление; - обрабатывать ошибки; - документировать решения; - не
-создавать фиктивные кнопки; - не утверждать, что тест пройден, если он
-не запускался; - не импортировать непроверенные Toolbox-модели со
-скрытыми скриптами.
+Before a task:
+1. Read the GDD.
+2. Check the current project structure.
+3. Confirm the feature is not already implemented.
+4. Find dependencies and configuration.
+5. Define the smallest safe change.
+6. State acceptance criteria.
 
-После чек-поинта агент сообщает: - что сделано; - какие файлы/объекты
-изменены; - как проверить; - результаты тестов; - известные
-ограничения; - следующий шаг; - статус PASS / FAIL / BLOCKED / READY FOR
-MANUAL TEST.
+While working:
+- Make small changes.
+- Do not rewrite whole systems without need.
+- Use Luau types where helpful.
+- Put balance values in config.
+- Separate server logic from client presentation.
+- Handle errors.
+- Document decisions.
+- Do not create fake buttons.
+- Do not claim a test passed if it was not run.
+- Do not import unverified Toolbox models with hidden scripts.
 
-Если Roblox Studio недоступна, агент не заявляет о фактическом
-тестировании, а предоставляет ручной тест-план и статус READY FOR MANUAL
-TEST или BLOCKED.
+After each checkpoint, report:
+- What changed.
+- Which files/objects changed.
+- How to verify it.
+- Test results.
+- Known limitations.
+- Next step.
+- Status: PASS / FAIL / BLOCKED / READY FOR MANUAL TEST.
 
-Обязательные файлы проекта: README.md — запуск и структура. TODO.md —
-задачи и статусы. CHANGELOG.md — история изменений. DECISIONS.md —
-принятые решения. GDD — этот документ.
+If Roblox Studio is unavailable, do not claim the game was tested. Provide a manual test plan and use READY FOR MANUAL TEST or BLOCKED.
 
-При конфликте требований: сохранять утверждённые решения; приоритет
-отдавать серверной безопасности и целостности данных; сохранять основной
-цикл; для MVP выбирать более простую реализацию; записывать компромисс в
-DECISIONS.md.
+Required project files:
+- README.md — setup and structure.
+- TODO.md — tasks and status.
+- CHANGELOG.md — change history.
+- DECISIONS.md — accepted decisions.
+- GDD — this document.
 
-================================================================ 28.
-ОТКРЫТЫЕ ВОПРОСЫ И ЗНАЧЕНИЯ ПО УМОЛЧАНИЮ
-================================================================
+When requirements conflict: preserve approved decisions; prioritize server security and data integrity; preserve the core loop; choose the simpler MVP implementation; record compromises in DECISIONS.md.
 
-1.  Игровой день: 30–40 реальных минут.
-2.  Оффлайн-доход: отсутствует в MVP.
-3.  Количество участков: определить нагрузочным тестом.
-4.  Вместимость: CapacityUnits и серверная проверка всех незавершённых
-    заказов.
-5.  Возврат клиента: время обработки плюс небольшой запас.
-6.  Необратимая потеря бизнеса: запрещена.
-7.  Gems: не обязательны для основного цикла.
-8.  Rebirth: после стабилизации экономики.
-9.  Объединение зданий: после обычной покупки и расширения.
-10. Погода: позднее обновление.
-11. Общий прогресс района: после стабильного мультиплеера.
-12. VIP и корпоративные заказы: после баланса обычного цикла.
+28. OPEN QUESTIONS AND DEFAULTS
 
-СЛОВАРЬ Business — прачечная игрока. Property — участок/здание.
-PlacedObject — размещённый объект. Order — заказ. Customer — NPC-клиент.
-CapacityUnits — единицы вместимости. MachineCycle — цикл машины. Rating
-— рейтинг. Attractiveness — привлекательность. Employee — сотрудник.
-WorkZone — рабочая зона. Campaign — рекламная кампания. AdSlot —
-рекламное место. Auction — аукцион. Rebirth — престижный сброс части
-прогресса. MVP — минимальная версия с законченным основным циклом. GDD —
-Game Design Document.
+1. Game day: 30–40 real minutes.
+2. Offline income: none in the MVP.
+3. Number of plots: determine through load testing.
+4. Capacity: CapacityUnits and server validation of all unfinished orders.
+5. Customer return: processing time plus a small buffer.
+6. Irreversible loss of the business: prohibited.
+7. Gems: not required for the core loop.
+8. Rebirth: after the economy is stable.
+9. Connecting buildings: after ordinary property purchase and expansion.
+10. Weather: later update.
+11. Shared district progression: after stable multiplayer.
+12. VIP and corporate orders: after balancing the normal loop.
 
-ФОРМУЛА ИГРЫ: Красивая прачечная + репутация + реклама + доступность ->
-поток клиентов -> очередь и заказы -> загрузка -> стирка -> сушка ->
-упаковка -> выдача -> оплата -> отзывы -> прибыль -> оборудование ->
-сотрудники -> недвижимость -> расширение -> автоматизация -> LAUNDRY
-EMPIRE
+GLOSSARY
 
-КОНЕЦ ДОКУМЕНТА
+Business — a player’s laundromat.
+Property — a plot/building.
+PlacedObject — a placed object.
+Order — an order.
+Customer — an NPC customer.
+CapacityUnits — capacity units.
+MachineCycle — a machine cycle.
+Rating — rating.
+Attractiveness — attractiveness.
+Employee — employee.
+WorkZone — work zone.
+Campaign — advertising campaign.
+AdSlot — advertising slot.
+Auction — auction.
+Rebirth — a prestige reset of some progress.
+MVP — the smallest version with a complete core loop.
+GDD — Game Design Document.
+
+GAME FORMULA
+
+Beautiful laundromat + reputation + advertising + accessibility → customer traffic → queues and orders → loading → washing → drying → packing → handoff → payment → reviews → profit → equipment → employees → property → expansion → automation → LAUNDRY EMPIRE
+
+END OF DOCUMENT

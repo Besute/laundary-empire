@@ -1,18 +1,20 @@
 # LAUNDRY EMPIRE — HANDOFF (read this first)
 
-Date: 2026-11-16. Previous model: Claude Sonnet 5.5. You are continuing the work. Nothing below has been run in Roblox Studio.
+Date: 2026-11-16. Previous model: Claude Sonnet 5.5. This is a continuing-work handoff. No gameplay behavior below has been run in Roblox Studio; the latest review ran local Rojo checks only and did not live-sync the place.
 
 ## 0. Inputs (all in this package)
-- `docs/GDD_RU.txt` — full game design doc (Russian). Source of truth for design.
+- docs/GDD_RU.txt — game design document translated into English; the historical filename is retained. This remains the design source of truth.
 - `docs/Updated_Tasks_Rojo_Guide.txt` — Rojo guide + MVP plan from the earlier agent (BOM root cause: UTF-8 BOM in default.project.json; fixed, file is BOM-free).
 - `docs/concept.png` — concept art (Russian UI, "CleanWave" laundromat, 9 panels, roadmap).
-- `docs/legacy/` — the earlier agent's md files + original .rar. **Finding: the original archive contained NO Luau code** (only Rojo scaffold + docs; its TODO.md/CHANGELOG are mojibake). Treat the game as a from-scratch build.
-- Environment constraints I hit: no Roblox Studio, no Rojo, no Lua/Luau interpreter, no pip/npm installs. RAR extracted via libarchive+ctypes (`tools/unrar_ctypes.py`).
+- docs/legacy/ contains the earlier agent files and original .rar. The archive contains no Luau gameplay code; the legacy TODO punctuation was repaired in this review. Treat gameplay as a from-scratch build unless the current source proves otherwise.
+- Previous setup constraints: the earlier agent lacked Roblox Studio, Rojo, a Lua/Luau interpreter, and pip/npm installs. The current review has Rojo 7.7.1 and a connected Studio Edit-mode endpoint; the Claude Code CLI is unavailable in this shell.
 - Rules from the GDD/guide you must keep: server authoritative for money/XP/orders/ownership; never claim PASS for untested things (use READY FOR MANUAL TEST / NOT TESTED); no Toolbox models; no offline income/production; no irreversible business loss; late systems only after core loop (here: isolated behind `GameConfig.Features` flags + pcall); do not publish/overwrite Place1.
 
-## 1. What exists now (DONE, unverified by any parser)
+## 1. Current implementation inventory (Rojo mapping/build verified; no Luau linter run)
 ```
 default.project.json        Rojo map: src/shared->ReplicatedStorage.Shared, src/server->ServerScriptService.Server (init.server.lua), src/client->StarterPlayerScripts.Client (init.client.lua)
+src/server/init.server.lua  minimal no-op server entry point
+src/client/init.client.lua minimal no-op client entry point
 src/shared/Util.lua         helpers, Util.ok/fail Result convention, nextId(data,kind), newSignal, formatMoney/Duration/Clock, weightedPick, reconcile
 src/shared/Remotes.lua      full remote contract (all C2S = RemoteFunctions returning Result; S2C = NotifyClient/StateUpdate/FxEvent) + arg-spec validator (validateArgs)
 src/shared/TimeUtil.lua     game clock from workspace attribute "LE_DayEpoch" (server sets it); getClock, periodOf, isWithinHours
@@ -22,7 +24,7 @@ src/shared/config/          GameConfig, EconomyConfig, ItemConfig, MachineConfig
 ```
 Naming rule: never put a file and a folder whose names differ only by case in the same directory (Windows/Rojo case-collapse). Folder is `config` (lowercase). Planned localization folder is `locales` (NOT `loc`) next to `Loc.lua`.
 
-NOT yet written: `docs/CONTRACT.md`, `Loc.lua` + `locales/`, `server/*`, `client/*`, tools (linter/simulator), tests, final docs (README/TODO/CHANGELOG/DECISIONS/CHECKPOINT rewritten in clean UTF-8), test plan, build.
+NOT yet implemented: docs/CONTRACT.md, Loc.lua and locales/, server gameplay services (only a no-op entry point exists), client controllers/UI (only a no-op entry point exists), lint/simulation tools, tests, final README/TODO/CHANGELOG/DECISIONS/CHECKPOINT, test plan, and build.
 
 ## 2. Architecture decisions (keep)
 - Everything procedural: world, plots, item models, NPC rigs (hand-built R6 from Parts + Motor6D), UI all built in code. No external assets (sounds use built-in `rbxasset://sounds/...`, replaceable in GameConfig.Sounds).
@@ -71,3 +73,12 @@ Tutorial: T0 setup (name+facade) ... T10 per `TutorialConfig`, advanced by bus e
 
 ## 6. Report template to the user (from the guide)
 Aftman/Rojo version, BOM check, build, serve, plugin connection, smoke test, Place1 integrity, project audit — each PASS/FAIL/NOT TESTED. Never PASS without running.
+
+## Latest project check — 2026-11-16
+
+- The GDD text is now English; docs/GDD_RU.txt retains its historical filename.
+- The project root now has .mcp.json for Claude Code. Its JSON parses and the Roblox Studio MCP launcher exists. The Claude Code CLI is unavailable in this shell, so a live Claude handshake is NOT VERIFIED.
+- Rojo 7.7.1 and Aftman are installed. Missing src/server and src/client roots now have minimal no-op entry scripts. rojo sourcemap and a test build passed.
+- Rojo serve listened on localhost:34872 during verification and was stopped after the check.
+- The Roblox Studio instance was observed in Edit mode. The Rojo Plugin connection, live sync, Place1 integrity, and gameplay remain NOT TESTED. No Place was modified, published, or overwritten.
+- The editable text files are English. The concept image remains an original visual reference and still contains Russian UI labels.
